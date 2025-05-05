@@ -8,7 +8,6 @@ class ServiceOrder {
         $this->connection = $connection;
     }
 
-    // Função para gerar o Número da OS
     private function generateNumeroOS() {
         $today = date('Ymd');
         $stmt = $this->connection->prepare("SELECT COUNT(*) AS total FROM OS WHERE NumeroOS LIKE ?");
@@ -17,11 +16,9 @@ class ServiceOrder {
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
         $countToday = $result['total'] + 1;
-
         return "OS" . $today . str_pad($countToday, 3, "0", STR_PAD_LEFT);
     }
 
-    // Função para salvar a ordem de serviço no banco
     public function save($data) {
         $numero_os   = $this->generateNumeroOS();
         $date        = $data['date'];
@@ -29,12 +26,11 @@ class ServiceOrder {
         $defect      = $data['defect'] === 'Outros' ? $data['defect_other'] : $data['defect'];
         $service     = $data['service'];
         $defect_value = $data['defect_value'];
-        $service_value = $data['service_value'];  // Recebe o valor do serviço
+        $service_value = $data['service_value'];
         $total_value = $defect_value + $service_value;
         $client_id   = $data['client_id'];
         $client_name = $data['client_name'];
 
-        // Verifica se o cliente existe
         $stmt = $this->connection->prepare("SELECT 1 FROM CLIENTE WHERE CodigoCliente = ?");
         $stmt->bind_param("i", $client_id);
         $stmt->execute();
@@ -46,13 +42,11 @@ class ServiceOrder {
             $insertClient->execute();
         }
 
-        // Insere a ordem de serviço no banco de dados
         $insertOS = $this->connection->prepare(
             "INSERT INTO OS (NumeroOS, Data, Equipamento, Defeito, Servico, ValorTotal, CodigoCliente)
              VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
 
-        // Passando os parâmetros corretamente, incluindo o valor do serviço
         $insertOS->bind_param("ssssdsi", $numero_os, $date, $equipment, $defect, $service, $total_value, $client_id);
 
         if ($insertOS->execute()) {
@@ -66,9 +60,7 @@ class ServiceOrder {
 $mensagem = null;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Para este exemplo, o código do cliente pode ser fornecido via uma variável de sessão ou outro método
-    // Aqui estamos simulando com um código de cliente estático.
-    $client_id = 123;  // Isso deve ser vindo de alguma parte do sistema, como um login.
+    $client_id = 123; // Simulação
     $_POST['client_id'] = $client_id;
 
     $serviceOrder = new ServiceOrder($connection);
@@ -87,63 +79,88 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Cadastro de Ordem de Serviço</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Cadastro de Ordem de Serviço</h1>
+<body class="bg-light">
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h4>📋 Cadastro de Ordem de Serviço</h4>
+                    </div>
+                    <div class="card-body">
+                        <?php if ($mensagem): ?>
+                            <div class="alert <?= strpos($mensagem, '✅') !== false ? 'alert-success' : 'alert-danger' ?>">
+                                <?= $mensagem ?>
+                            </div>
+                        <?php endif; ?>
 
-    <?php if ($mensagem): ?>
-        <p style="padding:10px; border:1px solid #ccc; background:#f8f8f8;">
-            <?= $mensagem ?>
-        </p>
-    <?php endif; ?>
+                        <form method="POST" action="">
+                            <div class="mb-3">
+                                <label class="form-label">Data:</label>
+                                <input type="date" name="date" class="form-control" required>
+                            </div>
 
-    <form method="POST" action="">
-        <label>Data:</label><br>
-        <input type="date" name="date" required><br>
+                            <div class="mb-3">
+                                <label class="form-label">Equipamento:</label>
+                                <select name="equipment" class="form-select" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="Celular">Celular</option>
+                                    <option value="Computador">Computador</option>
+                                    <option value="Notebook">Notebook</option>
+                                </select>
+                            </div>
 
-        <label>Equipamento:</label><br>
-        <select name="equipment" required>
-            <option value="">Selecione...</option>
-            <option value="Celular">Celular</option>
-            <option value="Computador">Computador</option>
-            <option value="Notebook">Notebook</option>
-        </select><br>
+                            <div class="mb-3">
+                                <label class="form-label">Serviço:</label>
+                                <select name="service" id="service" class="form-select" required onchange="atualizaDefeitos()">
+                                    <option value="">Selecione...</option>
+                                    <option value="Reparo">Reparo</option>
+                                    <option value="Troca de peça">Troca de peça</option>
+                                    <option value="Limpeza">Limpeza</option>
+                                    <option value="Instalação">Instalação</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                            </div>
 
-        <label>Serviço:</label><br>
-        <select name="service" id="service" required onchange="atualizaDefeitos()">
-            <option value="">Selecione...</option>
-            <option value="Reparo">Reparo</option>
-            <option value="Troca de peça">Troca de peça</option>
-            <option value="Limpeza">Limpeza</option>
-            <option value="Instalação">Instalação</option>
-            <option value="Outros">Outros</option>
-        </select><br>
+                            <div class="mb-3">
+                                <label class="form-label">Defeito:</label>
+                                <select name="defect" id="defect" class="form-select" required onchange="atualizaValorTotal()">
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
 
-        <label>Defeito:</label><br>
-        <select name="defect" id="defect" required onchange="atualizaValorTotal()">
-            <option value="">Selecione...</option>
-        </select><br>
+                            <div class="mb-3" id="outroDefeitoBox" style="display:none;">
+                                <label class="form-label">Descreva o defeito:</label>
+                                <input type="text" name="defect_other" id="defect_other" class="form-control">
+                                <div class="form-text">💡 Valor aproximado. Pode mudar após avaliação do técnico.</div>
+                            </div>
 
-        <!-- Campo extra para defeito personalizado -->
-        <div id="outroDefeitoBox" style="display:none;">
-            <label>Descreva o defeito:</label><br>
-            <input type="text" name="defect_other" id="defect_other"><br>
-            <small><em>💡 Valor aproximado. Pode mudar após avaliação do técnico.</em></small><br>
+                            <div class="mb-3">
+                                <label class="form-label">Valor Total (R$):</label>
+                                <input type="number" step="0.01" name="total_value" id="total_value" class="form-control" readonly required>
+                            </div>
+
+                            <input type="hidden" name="service_value" id="service_value">
+                            <input type="hidden" name="defect_value" id="defect_value">
+
+                            <div class="mb-3">
+                                <label class="form-label">Nome do Cliente:</label>
+                                <input type="text" name="client_name" class="form-control" required>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success">💾 Salvar Ordem de Serviço</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <label>Valor Total (R$):</label><br>
-        <input type="number" step="0.01" name="total_value" id="total_value" readonly required><br>
-
-        <input type="hidden" name="service_value" id="service_value"><!-- Campo oculto para valor do serviço -->
-
-        <label>Nome do Cliente:</label><br>
-        <input type="text" name="client_name" required><br><br>
-
-        <input type="submit" value="Salvar Ordem de Serviço">
-    </form>
+    </div>
 
     <script>
-    // Definição dos defeitos para cada serviço
     const defeitosPorServico = {
         "Reparo": {
             "Tela quebrada": 250.00,
@@ -172,24 +189,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     };
 
-    // Função para atualizar os defeitos de acordo com o serviço selecionado
     function atualizaDefeitos() {
         const serviceSelect = document.getElementById("service");
         const defectSelect = document.getElementById("defect");
         const outroBox = document.getElementById("outroDefeitoBox");
 
-        // Limpa a lista de defeitos
         defectSelect.innerHTML = '<option value="">Selecione...</option>';
-
         const defeitos = defeitosPorServico[serviceSelect.value] || {};
 
-        // Preenche os defeitos no select de acordo com o serviço
         if (serviceSelect.value === "Outros") {
             outroBox.style.display = "block";
-            return;
+        } else {
+            outroBox.style.display = "none";
         }
-
-        outroBox.style.display = "none";
 
         for (const [defeito, valor] of Object.entries(defeitos)) {
             const option = document.createElement("option");
@@ -198,37 +210,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             defectSelect.appendChild(option);
         }
 
-        // Atualiza o valor total quando um defeito é selecionado
         atualizaValorTotal();
     }
 
-    // Função para atualizar o valor total de acordo com o defeito selecionado
     function atualizaValorTotal() {
-        const defectSelect = document.getElementById("defect");
         const serviceSelect = document.getElementById("service");
-        const defectValue = defeitosPorServico[serviceSelect.value][defectSelect.value] || 0;
+        const defectSelect = document.getElementById("defect");
 
+        const defectValue = defeitosPorServico[serviceSelect.value]?.[defectSelect.value] || 0;
         const serviceValue = {
             "Reparo": 100,
             "Troca de peça": 150,
             "Limpeza": 80,
             "Instalação": 120,
             "Outros": 50
-        };
+        }[serviceSelect.value] || 50;
 
-        // Atualiza o valor total
-        const serviceAmount = serviceValue[serviceSelect.value] || 50;
-        const valorInput = document.getElementById("total_value");
-        valorInput.value = (defectValue + serviceAmount).toFixed(2);
-
-        // Atualiza o campo oculto para enviar o valor do serviço ao PHP
-        document.getElementById("service_value").value = serviceAmount;  // Atualiza o valor do serviço aqui
-
-        // Atualiza o valor do defeito para enviar ao PHP (não é necessário, mas é uma boa prática)
+        document.getElementById("total_value").value = (defectValue + serviceValue).toFixed(2);
+        document.getElementById("service_value").value = serviceValue;
         document.getElementById("defect_value").value = defectValue;
     }
 
-    // Função para inicializar a lista de defeitos dependendo do serviço
     document.addEventListener("DOMContentLoaded", () => {
         atualizaDefeitos();
     });

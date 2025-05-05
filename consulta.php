@@ -64,7 +64,6 @@ $result = $stmt->get_result();
             <button type="submit" class="btn btn-primary w-100">🔍 Buscar</button>
         </div>
     </form>
-
     <?php if ($result->num_rows > 0): ?>
         <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle">
@@ -96,12 +95,16 @@ $result = $stmt->get_result();
                                class="btn btn-sm btn-outline-danger" 
                                onclick="return confirm('Tem certeza que deseja excluir esta ordem de serviço?')">🗑️ Excluir</a>
                             <button onclick="imprimir('<?= $row['NumeroOS'] ?>')" class="btn btn-sm btn-outline-info">🖨️ Imprimir</button>
+                            
                         </td>
                     </tr>
                 <?php endwhile; ?>
                 </tbody>
             </table>
         </div>
+        <div class="card-body">
+    <a href="criaros.php" class="btn btn-secondary mb-3">🔙 Voltar para Cadastrar Outra OS</a>
+    </div>
     <?php else: ?>
         <div class="alert alert-warning">❌ Nenhuma ordem de serviço encontrada com os critérios informados.</div>
     <?php endif; ?>
@@ -111,6 +114,12 @@ $result = $stmt->get_result();
 function imprimir(numero_os) {
     window.open('imprimir_os.php?numero_os=' + numero_os, '_blank');
 }
+</script>
+<script>
+    document.getElementById('select_all').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('input[name="os_selecionadas[]"]');
+        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

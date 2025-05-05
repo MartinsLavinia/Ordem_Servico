@@ -80,6 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <title>Cadastro de Ordem de Serviço</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
     <div class="container mt-5 mb-5">
@@ -158,6 +159,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
             </div>
         </div>
+        <div class="card-body">
+                <!-- Link de voltar para consulta com seta para a direita -->
+                <a href="consulta.php" class="btn btn-secondary mb-3 float-end">
+                    Ir para Consulta <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
     </div>
 
     <script>
@@ -235,5 +242,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         atualizaDefeitos();
     });
     </script>
+    </div>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

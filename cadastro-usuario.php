@@ -36,7 +36,9 @@
      <script type='text/javascript'>document.addEventListener('DOMContentLoaded', function () {window.setTimeout(document.querySelector('svg').classList.add('animated'),1000);})</script>
      </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-        <form>
+
+       <form action="cadastro-usuario.php" method="POST">
+
         <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Cadastro - Usuário</h2>
           <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
             <p class="lead fw-normal mb-0 me-3">Entrar com</p>
@@ -54,23 +56,23 @@
           </div>
 
           <div data-mdb-input-init class="form-outline mb-4">
-            <input type="email" id="form3Example3" class="form-control form-control-lg"
-              placeholder="Digite seu nome" />
-            <label class="form-label" for="form3Example3">Nome</label>
+          <label class="form-label" for="form3Example3">Nome</label>
+          <input type="text" name="nome" class="form-control form-control-lg" required />
+            
           </div>
 
           <!-- Email input -->
           <div data-mdb-input-init class="form-outline mb-4">
-            <input type="email" id="form3Example3" class="form-control form-control-lg"
-              placeholder="Digite seu email" />
-            <label class="form-label" for="form3Example3">Email</label>
+          <label class="form-label" for="form3Example3">Email</label>
+          <input type="email" name="email" class="form-control form-control-lg" required />
+
+           
           </div>
 
           <!-- Password input -->
           <div data-mdb-input-init class="form-outline mb-3">
-            <input type="password" id="form3Example4" class="form-control form-control-lg"
-              placeholder="Digite sua senha" />
-            <label class="form-label" for="form3Example4">Senha</label>
+          <label class="form-label" for="form3Example4">Senha</label>
+          <input type="password" name="senha" class="form-control form-control-lg" required />
           </div>
 
           <div class="d-flex justify-content-between align-items-center">
@@ -85,8 +87,7 @@
           </div>
 
           <div class="text-center text-lg-start mt-4 pt-2">
-            <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
-              style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
+          <button type="submit" class="btn btn-primary btn-lg">Cadastrar</button>
             <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="#!"
                 class="link-danger" >Entrar</a></p>
           </div>
@@ -194,6 +195,48 @@ svg#freepik_stories-service-247.animated #freepik--Chat--inject-82 {
 }
 
 </style>
+
+<?php
+// Conexão com banco (ajuste com seus dados)
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db = "sua_base_de_dados";
+
+$conn = new mysqli($host, $user, $pass, $db);
+
+if ($conn->connect_error) {
+    die("Erro de conexão: " . $conn->connect_error);
+}
+
+// Recebe os dados do formulário
+$nome  = $_POST['nome'] ?? '';
+$email = $_POST['email'] ?? '';
+$senha = $_POST['senha'] ?? '';
+
+// Validação básica
+if (empty($nome) || empty($email) || empty($senha)) {
+    die("Por favor, preencha todos os campos.");
+}
+
+// Criptografa a senha
+$senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+
+// Insere no banco
+$sql = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("sss", $nome, $email, $senha_hash);
+
+if ($stmt->execute()) {
+    echo "Usuário cadastrado com sucesso!";
+} else {
+    echo "Erro ao cadastrar: " . $conn->error;
+}
+
+$stmt->close();
+$conn->close();
+?>
+
     
 </body>
 </html>

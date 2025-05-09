@@ -82,8 +82,10 @@
           <div class="text-center text-lg-start mt-4 pt-2">
             <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
               style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Login</button>
-            <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="#!"
-                class="link-danger" >Entrar</a></p>
+           <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="login-adm.php" class="link-danger custom-link">Entrar</a></p>
+<p class="small fw-bold mt-2 pt-1 mb-0">É um colaborador? <a href="cadastro-adm.php" class="link-danger custom-link">Cadastre-se</a></p>
+<p class="small fw-bold mt-2 pt-1 mb-0">É um usuário? Faça <a href="login-usuario.php" class="link-danger custom-link">Login</a></p>
+
           </div>
 
         </form>
@@ -119,6 +121,15 @@
 </section>
 
 <style>
+  /* Cor personalizada para os links */
+.custom-link {
+  color: #FF5733; /* Escolha a cor que você preferir */
+}
+
+.custom-link:hover {
+  color: #C70039; /* Cor do link ao passar o mouse (efeito hover) */
+}
+
 /* Borda verde ao redor dos inputs */
 #form3Example3,
 #form3Example4 {

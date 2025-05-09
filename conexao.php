@@ -1,15 +1,14 @@
 <?php
-// connection.php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$database = "oscd_lamanna";
 
-$host = "localhost";
-$username = "root";          
-$password = "";              
-$database = "oscd_lamanna";  
+// Cria a conexão
+$conn = new mysqli($servername, $username, $password, $database);
 
-$connection = mysqli_connect($host, $username, $password, $database);
-
-if ($connection->connect_error) {
-    die("Connection failed: " . $connection->connect_error);
+// Verifica a conexão
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
 }
-
 ?>

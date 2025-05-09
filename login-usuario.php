@@ -36,58 +36,28 @@
      <script type='text/javascript'>document.addEventListener('DOMContentLoaded', function () {window.setTimeout(document.querySelector('svg').classList.add('animated'),1000);})</script>
      </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-        <form>
-        <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Login - Bem-vindo, Usuário!</h2>
-          <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-            <p class="lead fw-normal mb-0 me-3">Entrar com</p>
-            <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-              <i class="fab fa-google"></i>
-            </button>
 
-            <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-              <i class="fab fa-linkedin-in"></i>
-            </button>
-          </div>
+      <form method="POST" action="processa_login.php">
+  <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Login - Bem-vindo, Usuário!</h2>
+  
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form3Example3">Email</label>
+    <input type="email" name="email" id="form3Example3" class="form-control form-control-lg" required />
+  </div>
 
-          <div class="divider d-flex align-items-center my-4">
-            <p class="text-center fw-bold mx-3 mb-0">Ou</p>
-</div>
+  <div class="form-outline mb-3">
+    <label class="form-label" for="form3Example4">Senha</label>
+    <input type="password" name="senha" id="form3Example4" class="form-control form-control-lg" required />
+  </div>
 
-          <!-- Email input -->
-          <div data-mdb-input-init class="form-outline mb-4">
-          <label class="form-label" for="form3Example3">Email</label>
-            <input type="email" id="form3Example3" class="form-control form-control-lg"
-              />
-           
-          </div>
+  <button type="submit" class="btn btn-primary btn-lg">Login</button>
 
-          <!-- Password input -->
-          <div data-mdb-input-init class="form-outline mb-3">
-          <label class="form-label" for="form3Example4">Senha</label>
-            <input type="password" id="form3Example4" class="form-control form-control-lg"
-             />
-            
-          </div>
-
-          <div class="d-flex justify-content-between align-items-center">
-            <!-- Checkbox -->
-            <div class="form-check mb-0">
-              <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-              <label class="form-check-label" for="form2Example3">
-                Lembre de mim
-              </label>
-            </div>
-            <a href="#!" class="text-body">Esqueceu a senha?</a>
-          </div>
-
-          <div class="text-center text-lg-start mt-4 pt-2">
-            <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
-              style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
-            <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="#!"
+   <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="login-usuario.php"
                 class="link-danger" >Entrar</a></p>
-          </div>
+                 <p class="small fw-bold mt-2 pt-1 mb-0">É um colaborador? <a href="login-usuario.php"
+                class="link-danger">Cadastre-se</a></p>
+</form>
 
-        </form>
       </div>
     </div>
   </div>

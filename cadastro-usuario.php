@@ -37,7 +37,7 @@
      </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
 
-       <form action="cadastro-usuario.php" method="POST">
+       <form action="processa_cadastro.php" method="POST">
 
         <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Cadastro - Usuário</h2>
           <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
@@ -88,8 +88,11 @@
 
           <div class="text-center text-lg-start mt-4 pt-2">
           <button type="submit" class="btn btn-primary btn-lg">Cadastrar</button>
-            <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="#!"
+            <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="login-usuario.php"
                 class="link-danger" >Entrar</a></p>
+                 <p class="small fw-bold mt-2 pt-1 mb-0">É um colaborador? <a href="login-usuario.php"
+                class="link-danger">Cadastre-se</a></p>
+          </div>
           </div>
 
         </form>
@@ -197,45 +200,42 @@ svg#freepik_stories-service-247.animated #freepik--Chat--inject-82 {
 </style>
 
 <?php
-// Conexão com banco (ajuste com seus dados)
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "sua_base_de_dados";
+$db = "oscd_lamanna"; // substitua pelo nome correto
 
 $conn = new mysqli($host, $user, $pass, $db);
-
 if ($conn->connect_error) {
     die("Erro de conexão: " . $conn->connect_error);
 }
 
-// Recebe os dados do formulário
 $nome  = $_POST['nome'] ?? '';
 $email = $_POST['email'] ?? '';
 $senha = $_POST['senha'] ?? '';
 
-// Validação básica
 if (empty($nome) || empty($email) || empty($senha)) {
     die("Por favor, preencha todos os campos.");
 }
 
-// Criptografa a senha
 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
-// Insere no banco
-$sql = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
+$sql = "INSERT INTO cliente (NomeCliente, email, senha) VALUES (?, ?, ?)";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("sss", $nome, $email, $senha_hash);
 
 if ($stmt->execute()) {
-    echo "Usuário cadastrado com sucesso!";
+    header("Location: login-usuario.php");
+    exit();
 } else {
     echo "Erro ao cadastrar: " . $conn->error;
 }
 
+
 $stmt->close();
 $conn->close();
 ?>
+
 
     
 </body>

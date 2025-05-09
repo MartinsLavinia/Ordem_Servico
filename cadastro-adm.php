@@ -89,8 +89,13 @@
           <div class="text-center text-lg-start mt-4 pt-2">
             <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
               style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Login</button>
-            <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="#!"
+            <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="cadastro-adm.php"
                 class="link-danger" >Entrar</a></p>
+                
+<p class="small fw-bold mt-2 pt-1 mb-0">É um usuário? Faça <a href="login-usuario.php" class="link-danger custom-link">Login</a></p>
+
+          </div>
+
           </div>
         </form>
       </div>

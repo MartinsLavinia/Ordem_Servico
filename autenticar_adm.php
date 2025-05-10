@@ -9,6 +9,7 @@ $admin_senha = "senha_segura";
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $senha = $_POST['senha'];
+    
 
     // Autenticação
     if ($email === $admin_email && $senha === $admin_senha) {

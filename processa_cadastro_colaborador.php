@@ -1,26 +1,28 @@
 <?php
-include "conexao.php"; // conecta ao banco
+// Inclui o arquivo de conexão com o banco
+include_once 'conexao.php';
 
-// Recebe os dados do formulário
-$nome = $_POST['nome'];
-$email = $_POST['email'];
-$senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); // Criptografa a senha
+// Verifica se os dados foram enviados via POST
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Recebe os dados do formulário
+    $nome  = mysqli_real_escape_string($conn, $_POST['nome']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); // senha criptografada
 
-// Prepara a inserção
-$sql = "INSERT INTO colaborador (NomeColaborador, email, senha) 
-        VALUES (?, ?, ?)";
+    // Insere no banco de dados
+    $sql = "INSERT INTO contas (nome, email, senha) VALUES ('$nome', '$email', '$senha')";
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sss", $nome, $email, $senha); // Ajuste no tipo de dados (todos são strings)
+    if (mysqli_query($conn, $sql)) {
+        echo "<script>alert('Cadastro realizado com sucesso!'); window.location.href='login-adm.php';</script>";
+    } else {
+        echo "Erro ao cadastrar: " . mysqli_error($conn);
+    }
 
-if ($stmt->execute()) {
-    // Cadastro realizado com sucesso, redireciona para login-adm.php
-    header("Location: login-adm.php");
-    exit; // A função exit para garantir que o script pare aqui
+    // Fecha a conexão
+    mysqli_close($conn);
 } else {
-    echo "Erro ao cadastrar: " . $stmt->error;
+    // Acesso direto à página sem POST
+    header("Location: cadastro-adm.php");
+    exit();
 }
-
-$stmt->close();
-$conn->close();
 ?>

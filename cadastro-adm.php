@@ -1,4 +1,4 @@
-<!DOCTYPE html>   //EXEMPLO
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -19,17 +19,6 @@
 <header class="fixed-top custom-green text-white p-3 shadow">
   <div class="container d-flex justify-content-between align-items-center">
     <h1 class="h4 m-0">Ordem de Serviço</h1>
-
-
-    <!-- Botão do Cliente -->
-<nav class="nav-cliente">
-  <a href="cadastro-usuario.php" class="btn-cliente" title="Área do Cliente">
-    👤
-  </a>
-</nav>
-
-</nav>
-
     <nav>
       <a href="#" class="text-white me-3">Início</a>
       <a href="#" class="text-white me-3">Sobre</a>
@@ -46,36 +35,61 @@
         <script type='text/javascript'>document.addEventListener('DOMContentLoaded', function () {window.setTimeout(document.querySelector('svg').classList.add('animated'),1000);})</script>
       </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-        
+ 
       
-      <form action="processa_cadastro_colaborador.php" method="POST">
-  <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Cadastro - Colaborador</h2>
+      <form action="autenticar_adm.php" method="POST">
+  <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Login - Bem-vindo, Colaborador!</h2>
+  
+  <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
+    <p class="lead fw-normal mb-0 me-3">Entrar com</p>
+    <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
+      <i class="fab fa-google"></i>
+    </button>
 
-  <!-- Nome input -->
+    <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
+      <i class="fab fa-linkedin-in"></i>
+    </button>
+  </div>
+
+  <div class="divider d-flex align-items-center my-4">
+    <p class="text-center fw-bold mx-3 mb-0">Ou</p>
+  </div>
+
+   <!-- Email input -->
   <div data-mdb-input-init class="form-outline mb-4">
-    <label class="form-label" for="form3Example1">Nome</label>
-    <input type="text" id="form3Example1" name="nome" class="form-control form-control-lg" required />
+    <label class="form-label" for="form3Example3">Nome:</label>
+    <input type="email" id="form3Example3" name="nome" class="form-control form-control-lg" required />
   </div>
 
   <!-- Email input -->
   <div data-mdb-input-init class="form-outline mb-4">
-    <label class="form-label" for="form3Example2">Email</label>
-    <input type="email" id="form3Example2" name="email" class="form-control form-control-lg" required />
+    <label class="form-label" for="form3Example3">Email</label>
+    <input type="email" id="form3Example3" name="email" class="form-control form-control-lg" required />
   </div>
 
   <!-- Password input -->
   <div data-mdb-input-init class="form-outline mb-3">
-    <label class="form-label" for="form3Example3">Senha</label>
-    <input type="password" id="form3Example3" name="senha" class="form-control form-control-lg" required />
+    <label class="form-label" for="form3Example4">Senha</label>
+    <input type="password" id="form3Example4" name="senha" class="form-control form-control-lg" required />
   </div>
 
-  <!-- Botão de Cadastro -->
-  <div class="text-center text-lg-start mt-4 pt-2">
-    <button type="submit" class="btn btn-primary btn-lg"
-      style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Cadastrar</button>
+  <div class="d-flex justify-content-between align-items-center">
+    <!-- Checkbox -->
+    <div class="form-check mb-0">
+      <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
+      <label class="form-check-label" for="form2Example3">
+        Lembre de mim
+      </label>
+    </div>
+    <a href="#!" class="text-body">Esqueceu a senha?</a>
   </div>
-    <p class="small fw-bold mt-2 pt-1 mb-0">Possui cadastro? Faça <a href="login-adm.php" class="link-danger custom-link">Login</a></p>
+
+  <div class="text-center text-lg-start mt-4 pt-2">
+    <button type="submit" class="btn btn-primary btn-lg" style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Login</button>
+    <p class="small fw-bold mt-2 pt-1 mb-0">Não tem cadastro, colaborador? <a href="cadastro-adm.php" class="link-danger custom-link">Cadastre-se</a></p>
+  </div>
 </form>
+
 
 
       </div>
@@ -110,112 +124,89 @@
 </section>
 
 <style>
-.nav-cliente {
-    position: absolute;
-    top: 10px;
-    left: 65px; /* separado do botão anterior */
-    z-index: 1000;
+  /* Cor personalizada para os links */
+.custom-link {
+  color: #FF5733; /* Escolha a cor que você preferir */
 }
 
-.btn-cliente {
-    background-color: #28a745;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    color: white;
-    border: none;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
+.custom-link:hover {
+  color: #C70039; /* Cor do link ao passar o mouse (efeito hover) */
 }
-
-.btn-cliente:hover {
-    background-color: #218838;
-}
-
 
 /* Borda verde ao redor dos inputs */
-#form3Example1,
-#form3Example2,
-#form3Example3 {
+#form3Example3,
+#form3Example4 {
   border: 2px solid #2B7540;
 }
 
 /* Borda verde mais destacada quando o campo está em foco */
-#form3Example1:focus,
-#form3Example2:focus,
-#form3Example3:focus {
+#form3Example3:focus,
+#form3Example4:focus {
   border: 2px solid #2B7540;
   box-shadow: 0 0 8px rgba(43, 117, 64, 0.5);
 }
 
-/* Ocultar label quando o input for preenchido */
-#form3Example1:valid + label,
-#form3Example2:valid + label,
-#form3Example3:valid + label {
-  visibility: hidden;
-}
+  .divider:after,
+  .divider:before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #333; 
+  }
 
-.divider:after,
-.divider:before {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: #333; 
-}
+  .h-custom {
+    height: calc(100% - 73px);
+  }
 
-.h-custom {
-  height: calc(100% - 73px);
-}
-
-.custom-green {
+  .custom-green {
   background-color: #2B7540 !important;
 }
 
-@media (max-width: 450px) {
-  .h-custom {
+
+  @media (max-width: 450px) {
+    .h-custom {
+      height: 100%;
+    }
+  }
+
+  img.floating {
+    width: 500px;     
+    height: auto;     
+    display: block;   
+    margin: 0 auto;   
+  }
+
+  html, body {
     height: 100%;
+    margin: 0;
+    overflow: hidden; /* impede rolagem */
   }
-}
 
-img.floating {
-  width: 500px;     
-  height: auto;     
-  display: block;   
-  margin: 0 auto;   
-}
-
-html, body {
-  height: 100%;
-  margin: 0;
-  overflow: hidden; /* impede rolagem */
-}
-
-svg#freepik_stories-service-247:not(.animated) .animable {
-  opacity: 0;
-}
-
-svg#freepik_stories-service-247.animated #freepik--Chat--inject-82 {
-  animation: floating 1.5s infinite linear;
-  animation-delay: 0s;
-}
-
-@keyframes floating {
-  0% {
-    opacity: 1;
-    transform: translateY(0px);
+  /* Oculta todos os elementos animáveis até a classe "animated" ser adicionada */
+  svg#freepik_stories-service-247:not(.animated) .animable {
+    opacity: 0;
   }
-  50% {
-    transform: translateY(-10px);
+
+  /* Aplica animação quando a classe "animated" estiver presente */
+  svg#freepik_stories-service-247.animated #freepik--Chat--inject-82 {
+    animation: floating 1.5s infinite linear;
+    animation-delay: 0s;
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0px);
+
+  /* Definição da animação "floating" */
+  @keyframes floating {
+    0% {
+      opacity: 1;
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0px);
+    }
   }
-}
 </style>
 
 </body>

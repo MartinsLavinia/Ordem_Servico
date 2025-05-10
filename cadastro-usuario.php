@@ -19,6 +19,13 @@
 <header class="fixed-top bg-primary text-white p-3 shadow">
   <div class="container d-flex justify-content-between align-items-center">
     <h1 class="h4 m-0">Ordem de Serviço</h1>
+      <nav>
+   <nav class="nav-adm">
+  <a href="cadastro-adm.php" class="btn-adm" title="Área do Administrador">
+    🔒
+  </a>
+</nav>
+</nav>
     <nav>
       <a href="#" class="text-white me-3">Início</a>
       <a href="#" class="text-white me-3">Sobre</a>
@@ -127,6 +134,33 @@
 </section>
 
 <style>
+.nav-adm {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+}
+
+.btn-adm {
+    background-color: #0056b3;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-adm:hover {
+    background-color: #004a99;
+}
+
+
   /* Destaque para os campos de formulário */
 .form-outline input {
   border: 2px solid #0d6efd !important; /* azul do Bootstrap */
@@ -198,6 +232,44 @@ svg#freepik_stories-service-247.animated #freepik--Chat--inject-82 {
 }
 
 </style>
+
+<?php
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db = "oscd_lamanna"; // substitua pelo nome correto
+
+$conn = new mysqli($host, $user, $pass, $db);
+if ($conn->connect_error) {
+    die("Erro de conexão: " . $conn->connect_error);
+}
+
+$nome  = $_POST['nome'] ?? '';
+$email = $_POST['email'] ?? '';
+$senha = $_POST['senha'] ?? '';
+
+if (empty($nome) || empty($email) || empty($senha)) {
+    die("Por favor, preencha todos os campos.");
+}
+
+$senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+
+$sql = "INSERT INTO cliente (NomeCliente, email, senha) VALUES (?, ?, ?)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("sss", $nome, $email, $senha_hash);
+
+if ($stmt->execute()) {
+    header("Location: login-usuario.php");
+    exit();
+} else {
+    echo "Erro ao cadastrar: " . $conn->error;
+}
+
+
+$stmt->close();
+$conn->close();
+?>
+
 
     
 </body>

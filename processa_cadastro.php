@@ -27,7 +27,7 @@ if ($stmt->execute()) {
     header("Location: login-usuario.php");
     exit();
 } else {
-    echo "Erro ao cadastrar: " . $stmt->error;
+    echo "Erro ao cadastrar: " . $conn->error;
 }
 
 $stmt->close();

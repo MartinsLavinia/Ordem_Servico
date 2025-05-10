@@ -1,54 +1,32 @@
 <?php
 session_start();
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db = "oscd_lamanna";
+include("conexao.php"); // Garante que a variável $conn exista e esteja conectada
 
-// Criar conexão com o banco de dados
-$conn = new mysqli($host, $user, $pass, $db);
+$email = $_POST['email'];
+$senha = $_POST['senha'];
 
-// Verificar se a conexão falhou
-if ($conn->connect_error) {
-    die("Erro de conexão: " . $conn->connect_error);
+if (!isset($conn) || $conn->connect_error) {
+    die("Erro na conexão com o banco de dados.");
 }
 
-$email = $_POST['email'] ?? '';
-$senha = $_POST['senha'] ?? '';
+$sql = "SELECT * FROM cliente WHERE email = ? AND senha = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $email, $senha);
+$stmt->execute();
+$result = $stmt->get_result();
 
-// Verificar se os campos foram preenchidos
-if (empty($email) || empty($senha)) {
-    $_SESSION['erro'] = "Por favor, preencha todos os campos.";
-    header("Location: login-usuario.php");
-    exit();
-}
-
-// Verificar se o email existe no banco de dados
-$verifica = $conn->prepare ("SELECT * FROM cliente WHERE email = ?");
-$verifica->bind_param("s", $email);
-$verifica->execute();
-$result = $verifica->get_result();
-
-if ($result->num_rows == 0) {
-   $_SESSION['erro'] = "Email não encontrado.";
-header("Location: login-usuario.php"); // Ou o caminho correto
-exit();
-}
-
-$usuario = $result->fetch_assoc();
-
-// Verificar a senha
-if (password_verify($senha, $usuario['senha'])) {
-    // A senha está correta, iniciar a sessão
-    $_SESSION['usuario_id'] = $usuario['CodigoCliente']; // Armazenar o ID do cliente na sessão
-    header("Location: criaros.php"); // Redirecionar para a página inicial
-    exit();
+if ($result->num_rows === 1) {
+    $_SESSION['usuario'] = $email;
+    echo "<script>
+        alert('Login cadastrado com sucesso!');
+        setTimeout(function() {
+            window.location.href = 'criaros.php';
+        }, 1500);
+    </script>";
 } else {
-    // Senha incorreta
-    $_SESSION['erro'] = "Senha incorreta.";
-    header("Location: login-usuario.php");
-    exit();
+    echo "<script>
+        alert('Email ou senha incorretos!');
+        window.location.href = 'login.php';
+    </script>";
 }
-
-$conn->close();
 ?>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>   //EXEMPLO
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -19,6 +19,17 @@
 <header class="fixed-top custom-green text-white p-3 shadow">
   <div class="container d-flex justify-content-between align-items-center">
     <h1 class="h4 m-0">Ordem de Serviço</h1>
+
+
+    <!-- Botão do Cliente -->
+<nav class="nav-cliente">
+  <a href="cadastro-usuario.php" class="btn-cliente" title="Área do Cliente">
+    👤
+  </a>
+</nav>
+
+</nav>
+
     <nav>
       <a href="#" class="text-white me-3">Início</a>
       <a href="#" class="text-white me-3">Sobre</a>
@@ -63,6 +74,7 @@
     <button type="submit" class="btn btn-primary btn-lg"
       style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Cadastrar</button>
   </div>
+    <p class="small fw-bold mt-2 pt-1 mb-0">Possui cadastro? Faça <a href="login-adm.php" class="link-danger custom-link">Login</a></p>
 </form>
 
 
@@ -98,6 +110,33 @@
 </section>
 
 <style>
+.nav-cliente {
+    position: absolute;
+    top: 10px;
+    left: 65px; /* separado do botão anterior */
+    z-index: 1000;
+}
+
+.btn-cliente {
+    background-color: #28a745;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-cliente:hover {
+    background-color: #218838;
+}
+
+
 /* Borda verde ao redor dos inputs */
 #form3Example1,
 #form3Example2,

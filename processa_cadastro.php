@@ -1,35 +1,51 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db = "oscd_lamanna";
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "oscd_lamanna";
 
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) {
-    die("Erro de conexão: " . $conn->connect_error);
+// Conexão com o banco
+$conexao = new mysqli($servername, $username, $password, $dbname);
+
+if ($conexao->connect_error) {
+    die("Falha na conexão: " . $conexao->connect_error);
 }
 
-$nome  = $_POST['nome'] ?? '';
-$email = $_POST['email'] ?? '';
-$senha = $_POST['senha'] ?? '';
+// Verifica se o formulário foi enviado
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nome = trim($_POST["nome"]);
+    $email = trim($_POST["email"]);
+    $senha = $_POST["senha"];
 
-if (empty($nome) || empty($email) || empty($senha)) {
-    die("Por favor, preencha todos os campos.");
+    // Criptografar a senha
+    $senhaCriptografada = password_hash($senha, PASSWORD_DEFAULT);
+
+    // Verifica se o email já existe
+    $verifica = $conexao->prepare("SELECT idCliente FROM cliente WHERE email = ?");
+    $verifica->bind_param("s", $email);
+    $verifica->execute();
+    $verifica->store_result();
+
+    if ($verifica->num_rows > 0) {
+        // Redireciona com erro
+        header("Location: cadastro.php?erro=email");
+        exit();
+    } else {
+        // Cadastra o novo cliente
+        $stmt = $conexao->prepare("INSERT INTO cliente (NomeCliente, email, senha) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $nome, $email, $senhaCriptografada);
+
+        if ($stmt->execute()) {
+            header("Location: login-usuario.php?cadastro=sucesso");
+            exit();
+        } else {
+            header("Location: cadastro.php?erro=banco");
+            exit();
+        }
+    }
+
+    $verifica->close();
+    $stmt->close();
+    $conexao->close();
 }
-
-$senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-
-$sql = "INSERT INTO cliente (NomeCliente, email, senha) VALUES (?, ?, ?)";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sss", $nome, $email, $senha_hash);
-
-if ($stmt->execute()) {
-    header("Location: login-usuario.php");
-    exit();
-} else {
-    echo "Erro ao cadastrar: " . $conn->error;
-}
-
-$stmt->close();
-$conn->close();
 ?>

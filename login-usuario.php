@@ -163,3 +163,47 @@ svg#freepik_stories-service-247.animated #freepik--Chat--inject-82 {
     
 </body>
 </html>
+<?php
+
+                    $servername = "localhost";
+                    $username = "root";
+                    $password = "";
+                    $dbname = "oscd_lamanna";
+
+                    // Conexão
+                    $conexao = new mysqli($servername, $username, $password, $dbname);
+                    if ($conexao->connect_error) {
+                        die("Falha na conexão: " . $conexao->connect_error);
+                    }
+
+                    // Verifica se foi enviado via POST
+                    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                        $email = trim($_POST['email']);
+                        $senha = $_POST['senha'];
+
+                        $stmt = $conexao->prepare("SELECT senha FROM contas WHERE email = ?");
+                        $stmt->bind_param("s", $email);
+                        $stmt->execute();
+                        $stmt->store_result();
+
+                        if ($stmt->num_rows > 0) {
+                            $stmt->bind_result($senhaHash);
+                            $stmt->fetch();
+
+                            if (password_verify($senha, $senhaHash)) {
+                                $_SESSION['email'] = $email;
+                                header("Location: criaros.php");
+                                exit(); // Encerrar execução após redirecionar
+                            } else {
+                                $erro = "Senha incorreta!";
+                            }
+                        } else {
+                            $erro = "Email não encontrado!";
+                        }
+
+                        $stmt->close();
+                        $conexao->close();
+                    }
+                    ?>
+                    
+                    <?php if (isset($erro)) echo "<p style='color:red;'>$erro</p>"; ?>

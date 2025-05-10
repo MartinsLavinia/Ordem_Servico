@@ -18,7 +18,7 @@
 
 <header class="fixed-top custom-green text-white p-3 shadow">
   <div class="container d-flex justify-content-between align-items-center">
-    <h1 class="h4 m-0">Ordem de Serviço</h1>
+    <h1 class="h4 m-0">Ordem de Serviço - Administrador</h1>
     <nav>
       <a href="#" class="text-white me-3">Início</a>
       <a href="#" class="text-white me-3">Sobre</a>
@@ -35,69 +35,43 @@
         <script type='text/javascript'>document.addEventListener('DOMContentLoaded', function () {window.setTimeout(document.querySelector('svg').classList.add('animated'),1000);})</script>
       </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-        <form>
-          <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left; ">Cadastro - Colaborador</h2>
-          <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-            <p class="lead fw-normal mb-0 me-3">Entrar com</p>
-            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-              <i class="fab fa-google"></i>
-            </button>
 
-            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-              <i class="fab fa-linkedin-in"></i>
-            </button>
-          </div>
 
-          <div class="divider d-flex align-items-center my-4">
-            <p class="text-center fw-bold mx-3 mb-0">Ou</p>
-          </div>
+   <form action="processa_cadadm.php" method="POST">
+  <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Cadastro - Colaborador</h2>
+<!-- Nome input -->
+<div data-mdb-input-init class="form-outline mb-4">
+  <label class="form-label" for="form3Example1">Nome</label>
+  <input type="text" name="nome" id="form3Example1" class="form-control form-control-lg" required />
+</div>
 
-          <!-- Nome input -->
-          <div data-mdb-input-init class="form-outline mb-4">
-          <label class="form-label" for="form3Example1">Nome</label>
-            <input type="text" id="form3Example1" class="form-control form-control-lg"
-              />
-          </div>
+<!-- Email input -->
+<div data-mdb-input-init class="form-outline mb-4">
+  <label class="form-label" for="form3Example2">Email</label>
+  <input type="email" name="email" id="form3Example2" class="form-control form-control-lg" required />
+</div>
 
-          <!-- Email input -->
-          <div data-mdb-input-init class="form-outline mb-4">
-          <label class="form-label" for="form3Example2">Email</label>
-            <input type="email" id="form3Example2" class="form-control form-control-lg"
-           />
-           
-          </div>
+<!-- Senha input -->
+<div data-mdb-input-init class="form-outline mb-3">
+  <label class="form-label" for="form3Example3">Senha</label>
+  <input type="password" name="senha" id="form3Example3" class="form-control form-control-lg" required />
+</div>
 
-          <!-- Password input -->
-          <div data-mdb-input-init class="form-outline mb-3">
-          <label class="form-label" for="form3Example3">Senha</label>
-            <input type="password" id="form3Example3" class="form-control form-control-lg"
-               />
-           
-          </div>
 
-          <div class="d-flex justify-content-between align-items-center">
-            <!-- Checkbox -->
-            <div class="form-check mb-0">
-              <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-              <label class="form-check-label" for="form2Example3">
-                Lembre de mim
-              </label>
-            </div>
-            <a href="#!" class="text-body">Esqueceu a senha?</a>
-          </div>
 
-          <div class="text-center text-lg-start mt-4 pt-2">
-            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
-              style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Login</button>
-            <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="cadastro-adm.php"
-                class="link-danger" >Entrar</a></p>
-                
-<p class="small fw-bold mt-2 pt-1 mb-0">É um usuário? Faça <a href="login-usuario.php" class="link-danger custom-link">Login</a></p>
+<div class="text-center text-lg-start mt-4 pt-2">
+  <button type="submit" class="btn btn-primary btn-lg"
+    style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Cadastrar</button>
+</div>
 
-          </div>
 
-          </div>
-        </form>
+    <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="login_adm.php" class="link-danger">Entrar</a></p>
+    <p class="small fw-bold mt-2 pt-1 mb-0">É um usuário? Faça <a href="login-usuario.php" class="link-danger custom-link">Login</a></p>
+  </div>
+</form>
+
+
+
       </div>
     </div>
   </div>

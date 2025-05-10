@@ -18,7 +18,7 @@
 
 <header class="fixed-top custom-green text-white p-3 shadow">
   <div class="container d-flex justify-content-between align-items-center">
-    <h1 class="h4 m-0">Ordem de Serviço - Administrador</h1>
+    <h1 class="h4 m-0">Ordem de Serviço</h1>
     <nav>
       <a href="#" class="text-white me-3">Início</a>
       <a href="#" class="text-white me-3">Sobre</a>
@@ -35,41 +35,35 @@
         <script type='text/javascript'>document.addEventListener('DOMContentLoaded', function () {window.setTimeout(document.querySelector('svg').classList.add('animated'),1000);})</script>
       </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-
-
-   <form action="processa_cadadm.php" method="POST">
+        
+      
+      <form action="processa_cadastro_colaborador.php" method="POST">
   <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Cadastro - Colaborador</h2>
-<!-- Nome input -->
-<div data-mdb-input-init class="form-outline mb-4">
-  <label class="form-label" for="form3Example1">Nome</label>
-  <input type="text" name="nome" id="form3Example1" class="form-control form-control-lg" required />
-</div>
 
-<!-- Email input -->
-<div data-mdb-input-init class="form-outline mb-4">
-  <label class="form-label" for="form3Example2">Email</label>
-  <input type="email" name="email" id="form3Example2" class="form-control form-control-lg" required />
-</div>
+  <!-- Nome input -->
+  <div data-mdb-input-init class="form-outline mb-4">
+    <label class="form-label" for="form3Example1">Nome</label>
+    <input type="text" id="form3Example1" name="nome" class="form-control form-control-lg" required />
+  </div>
 
-<!-- Senha input -->
-<div data-mdb-input-init class="form-outline mb-3">
-  <label class="form-label" for="form3Example3">Senha</label>
-  <input type="password" name="senha" id="form3Example3" class="form-control form-control-lg" required />
-</div>
+  <!-- Email input -->
+  <div data-mdb-input-init class="form-outline mb-4">
+    <label class="form-label" for="form3Example2">Email</label>
+    <input type="email" id="form3Example2" name="email" class="form-control form-control-lg" required />
+  </div>
 
+  <!-- Password input -->
+  <div data-mdb-input-init class="form-outline mb-3">
+    <label class="form-label" for="form3Example3">Senha</label>
+    <input type="password" id="form3Example3" name="senha" class="form-control form-control-lg" required />
+  </div>
 
-
-<div class="text-center text-lg-start mt-4 pt-2">
-  <button type="submit" class="btn btn-primary btn-lg"
-    style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Cadastrar</button>
-</div>
-
-
-    <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="login_adm.php" class="link-danger">Entrar</a></p>
-    <p class="small fw-bold mt-2 pt-1 mb-0">É um usuário? Faça <a href="login-usuario.php" class="link-danger custom-link">Login</a></p>
+  <!-- Botão de Cadastro -->
+  <div class="text-center text-lg-start mt-4 pt-2">
+    <button type="submit" class="btn btn-primary btn-lg"
+      style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Cadastrar</button>
   </div>
 </form>
-
 
 
       </div>

@@ -1,4 +1,18 @@
-  <!DOCTYPE html>
+<?php
+include("conexao.php");
+
+$cargos = [];
+$query = "SELECT CodigoCargo, NomeCargo FROM cargo";
+$result = $conexao->query($query);
+
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $cargos[] = $row;
+    }
+}
+?>
+
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -47,6 +61,23 @@
             <label class="form-label" for="form3Example2">Email</label>
             <input type="email" id="form3Example2" name="email" class="form-control form-control-lg" required />
           </div>
+          <!-- Campo Select para Cargo -->
+          <div class="form-outline mb-4">
+            <label class="form-label" for="form3Example2">Cargo</label>
+            <select id="cargoSelect" name="CodigoCargo" class="form-control form-control-lg" required>
+              <option value="" disabled selected>Selecione o Cargo</option>
+              <?php
+              // Conectar ao banco e buscar os cargos
+              include('conexao.php');
+              $sql = "SELECT * FROM cargo";
+              $result = $conexao->query($sql);
+              while ($row = $result->fetch_assoc()) {
+                  echo "<option value='" . $row['CodigoCargo'] . "'>" . $row['NomeCargo'] . "</option>";
+              }
+              ?>
+            </select>
+          </div>
+
           <!-- Senha input -->
           <div data-mdb-input-init class="form-outline mb-3">
             <label class="form-label" for="form3Example3">Senha</label>
@@ -103,17 +134,20 @@
   }
   #form3Example1,
   #form3Example2,
+  #cargoSelect,
   #form3Example3 {
     border: 2px solid #2B7540;
   }
   #form3Example1:focus,
   #form3Example2:focus,
+  #cargoSelect:focus,
   #form3Example3:focus {
     border: 2px solid #2B7540;
     box-shadow: 0 0 8px rgba(43, 117, 64, 0.5);
   }
   #form3Example1:valid + label,
   #form3Example2:valid + label,
+  #cargoSelect:valid + label,
   #form3Example3:valid + label {
     visibility: hidden;
   }
@@ -135,6 +169,7 @@
       height: 100%;
     }
   }
+  
   img.floating {
     width: 500px;
     height: auto;

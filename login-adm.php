@@ -37,7 +37,7 @@
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
  
       
-      <form action="autenticar_adm.php" method="POST">
+      <form action="processa_login_colaborador.php" method="POST">
   <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Login - Bem-vindo, Colaborador!</h2>
   
   <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">

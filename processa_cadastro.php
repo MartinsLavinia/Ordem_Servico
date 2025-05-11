@@ -1,15 +1,5 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "oscd_lamanna";
-
-// Conexão com o banco
-$conexao = new mysqli($servername, $username, $password, $dbname);
-
-if ($conexao->connect_error) {
-    die("Falha na conexão: " . $conexao->connect_error);
-}
+include 'conexao.php';
 
 // Verifica se o formulário foi enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -21,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $senhaCriptografada = password_hash($senha, PASSWORD_DEFAULT);
 
     // Verifica se o email já existe
-    $verifica = $conexao->prepare("SELECT idCliente FROM cliente WHERE email = ?");
+    $verifica = $conexao->prepare("SELECT CodigoCliente FROM cliente WHERE email = ?");
     $verifica->bind_param("s", $email);
     $verifica->execute();
     $verifica->store_result();

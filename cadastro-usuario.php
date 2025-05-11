@@ -97,7 +97,7 @@
           <button type="submit" class="btn btn-primary btn-lg">Cadastrar</button>
             <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="login-usuario.php"
                 class="link-danger" >Entrar</a></p>
-                 <p class="small fw-bold mt-2 pt-1 mb-0">É um colaborador? <a href="login-usuario.php"
+                 <p class="small fw-bold mt-2 pt-1 mb-0">É um colaborador? <a href="login-adm.php"
                 class="link-danger">Cadastre-se</a></p>
           </div>
           </div>

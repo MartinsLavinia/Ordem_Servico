@@ -3,8 +3,8 @@ include 'conexao.php';
 
 // Excluir OS se solicitado
 function excluirOS($numero_os) {
-    global $connection;
-    $stmt = $connection->prepare("DELETE FROM OS WHERE NumeroOS = ?");
+    global $conexao;
+    $stmt = $conexao->prepare("DELETE FROM OS WHERE NumeroOS = ?");
     $stmt->bind_param("s", $numero_os);
     if ($stmt->execute()) {
         echo "<div class='alert alert-success'>✅ Ordem de serviço excluída com sucesso!</div>";
@@ -33,7 +33,7 @@ if (!empty($_GET['cliente_nome'])) {
     $params[] = "%" . $_GET['cliente_nome'] . "%";
 }
 
-$stmt = $connection->prepare($sql);
+$stmt = $conexao->prepare($sql);
 if (!empty($params)) {
     $types = str_repeat('s', count($params));
     $stmt->bind_param($types, ...$params);

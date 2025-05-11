@@ -9,7 +9,7 @@ if (!isset($_GET['numero_os'])) {
 $numero_os = $_GET['numero_os'];
 
 // Consulta a OS no banco de dados
-$stmt = $connection->prepare("
+$stmt = $conexao->prepare("
     SELECT OS.*, CLIENTE.NomeCliente 
     FROM OS 
     JOIN CLIENTE ON OS.CodigoCliente = CLIENTE.CodigoCliente 

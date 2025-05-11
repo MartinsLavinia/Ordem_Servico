@@ -2,15 +2,15 @@
 include 'conexao.php'; // Inclua a conexão com o banco de dados
 
 class ServiceOrder {
-    private $connection;
+    private $conexao;
 
-    public function __construct($connection) {
-        $this->connection = $connection;
+    public function __construct($conexao) {
+        $this->conexao = $conexao;
     }
 
     private function generateNumeroOS() {
         $today = date('Ymd');
-        $stmt = $this->connection->prepare("SELECT COUNT(*) AS total FROM OS WHERE NumeroOS LIKE ?");
+        $stmt = $this->conexao->prepare("SELECT COUNT(*) AS total FROM OS WHERE NumeroOS LIKE ?");
         $prefix = "OS$today%";
         $stmt->bind_param("s", $prefix);
         $stmt->execute();
@@ -31,18 +31,18 @@ class ServiceOrder {
         $client_id   = $data['client_id'];
         $client_name = $data['client_name'];
 
-        $stmt = $this->connection->prepare("SELECT 1 FROM CLIENTE WHERE CodigoCliente = ?");
+        $stmt = $this->conexao->prepare("SELECT 1 FROM CLIENTE WHERE CodigoCliente = ?");
         $stmt->bind_param("i", $client_id);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows === 0) {
-            $insertClient = $this->connection->prepare("INSERT INTO CLIENTE (CodigoCliente, NomeCliente) VALUES (?, ?)");
+            $insertClient = $this->conexao->prepare("INSERT INTO CLIENTE (CodigoCliente, NomeCliente) VALUES (?, ?)");
             $insertClient->bind_param("is", $client_id, $client_name);
             $insertClient->execute();
         }
 
-        $insertOS = $this->connection->prepare(
+        $insertOS = $this->conexao->prepare(
             "INSERT INTO OS (NumeroOS, Data, Equipamento, Defeito, Servico, ValorTotal, CodigoCliente)
              VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $client_id = 123; // Simulação
     $_POST['client_id'] = $client_id;
 
-    $serviceOrder = new ServiceOrder($connection);
+    $serviceOrder = new ServiceOrder($conexao);
     $numero_os = $serviceOrder->save($_POST);
 
     if ($numero_os !== false) {

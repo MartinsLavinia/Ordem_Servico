@@ -7,7 +7,7 @@ $osData = null;
 if (isset($_GET['numero_os'])) {
     $numero_os = $_GET['numero_os'];
 
-    $stmt = $connection->prepare("SELECT * FROM OS WHERE NumeroOS = ?");
+    $stmt = $conexao->prepare("SELECT * FROM OS WHERE NumeroOS = ?");
     $stmt->bind_param("s", $numero_os);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $servico     = $_POST['servico'];
     // Valor total não é editável, então não é atualizado
 
-    $stmt = $connection->prepare(
+    $stmt = $conexao->prepare(
         "UPDATE OS SET Data = ?, Equipamento = ?, Defeito = ?, Servico = ? WHERE NumeroOS = ?"
     );
     $stmt->bind_param("sssss", $data, $equipamento, $defeito, $servico, $numero_os);
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Recarrega os dados atualizados
-    $stmt = $connection->prepare("SELECT * FROM OS WHERE NumeroOS = ?");
+    $stmt = $conexao->prepare("SELECT * FROM OS WHERE NumeroOS = ?");
     $stmt->bind_param("s", $numero_os);
     $stmt->execute();
     $osData = $stmt->get_result()->fetch_assoc();

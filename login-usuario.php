@@ -165,23 +165,14 @@ svg#freepik_stories-service-247.animated #freepik--Chat--inject-82 {
 </html>
 <?php
 
-                    $servername = "localhost";
-                    $username = "root";
-                    $password = "";
-                    $dbname = "oscd_lamanna";
-
-                    // Conexão
-                    $conexao = new mysqli($servername, $username, $password, $dbname);
-                    if ($conexao->connect_error) {
-                        die("Falha na conexão: " . $conexao->connect_error);
-                    }
+                   include 'conexao.php';
 
                     // Verifica se foi enviado via POST
                     if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $email = trim($_POST['email']);
                         $senha = $_POST['senha'];
 
-                        $stmt = $conexao->prepare("SELECT senha FROM contas WHERE email = ?");
+                        $stmt = $conexao->prepare("SELECT senha FROM clientes WHERE email = ?");
                         $stmt->bind_param("s", $email);
                         $stmt->execute();
                         $stmt->store_result();

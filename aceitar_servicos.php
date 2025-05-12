@@ -1,23 +1,65 @@
 <?php
 session_start();
+include("conexao.php");
 
-include 'conexao.php';
+// Verifica se o colaborador está logado
+if (!isset($_SESSION['colaborador']) || !isset($_SESSION['colaborador']['codigo'])) {
+    echo "<div class='alert alert-danger text-center'>Erro: Colaborador não autenticado.</div>";
+    exit;
+}
+
+$colaboradorId = $_SESSION['colaborador']['codigo'];
 
 // Aceitar serviço
 if (isset($_GET['aceitar']) && is_numeric($_GET['aceitar'])) {
     $os_id = $_GET['aceitar'];
 
-    $stmt = $conexao->prepare("UPDATE os SET CodigoColaborador = ? WHERE OS = ?");
-    $stmt->bind_param("ii", $colaboradorId, $os_id);
+    // Verifica o defeito para saber se é "outros"
+    $stmt = $conexao->prepare("SELECT Defeito FROM os WHERE OS = ?");
+    $stmt->bind_param("i", $os_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
 
-    if ($stmt->execute()) {
-        echo "<div class='alert alert-success text-center'>Serviço aceito com sucesso!</div>";
+    // Se o defeito for "outros", o técnico pode alterar o valor
+    if (strtolower($row['Defeito']) == 'outros') {
+        // Atualiza a OS com o colaborador e altera o valor
+        if (isset($_POST['valor_total'])) {
+            $valor_total = floatval($_POST['valor_total']);
+            $stmt = $conexao->prepare("UPDATE os SET CodigoColaborador = ?, ValorTotal = ? WHERE OS = ?");
+            $stmt->bind_param("idi", $colaboradorId, $valor_total, $os_id);
+            $stmt->execute();
+
+            // Insere o andamento
+            $stmt = $conexao->prepare("INSERT INTO andamentoos (OS, Situacao, Descricao) VALUES (?, ?, ?)");
+            $situacao = 'Em andamento';
+            $descricao = 'Serviço iniciado pelo colaborador, valor alterado';
+            $stmt->bind_param("iss", $os_id, $situacao, $descricao);
+            $stmt->execute();
+
+            echo "<div class='alert alert-success text-center'>Serviço aceito e movido para andamento com sucesso! O valor foi alterado.</div>";
+        }
     } else {
-        echo "<div class='alert alert-danger text-center'>Erro ao aceitar o serviço.</div>";
+        // Se o defeito não for "outros", apenas atribui o colaborador sem alterar o valor
+        $stmt = $conexao->prepare("UPDATE os SET CodigoColaborador = ? WHERE OS = ?");
+        $stmt->bind_param("ii", $colaboradorId, $os_id);
+
+        if ($stmt->execute()) {
+            // Insere o andamento
+            $stmt = $conexao->prepare("INSERT INTO andamentoos (OS, Situacao, Descricao) VALUES (?, ?, ?)");
+            $situacao = 'Em andamento';
+            $descricao = 'Serviço iniciado pelo colaborador';
+            $stmt->bind_param("iss", $os_id, $situacao, $descricao);
+            $stmt->execute();
+
+            echo "<div class='alert alert-success text-center'>Serviço aceito e movido para andamento com sucesso!</div>";
+        } else {
+            echo "<div class='alert alert-danger text-center'>Erro ao aceitar o serviço.</div>";
+        }
     }
 }
 
-// Buscar OS pendentes (não atribuídas a nenhum colaborador)
+// Buscar OS pendentes
 $sql = "SELECT os.OS, os.NumeroOS, os.Data, os.Equipamento, os.Defeito, os.Servico, os.ValorTotal, cliente.NomeCliente
         FROM os
         INNER JOIN cliente ON os.CodigoCliente = cliente.CodigoCliente
@@ -32,6 +74,7 @@ $result = $conexao->query($sql);
     <meta charset="UTF-8">
     <title>Serviços Pendentes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-5">
@@ -76,7 +119,10 @@ $result = $conexao->query($sql);
     <?php endif; ?>
 
     <div class="text-center mt-4">
-        <a href="listar_os.php" class="btn btn-secondary">🔙 Voltar</a>
+       <a href="andamento.php" class="btn btn-secondary">
+    andamentos <i class="bi bi-arrow-right ms-1"></i>
+</a>
+
     </div>
 </div>
 </body>

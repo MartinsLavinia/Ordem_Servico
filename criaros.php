@@ -1,5 +1,8 @@
 <?php
 session_start();
+include 'verificar_sessao.php'; // Inclui a verificação
+verificarSessao(); // Verifica se o usuário está autenticado
+
 include 'conexao.php';
 
 class ServiceOrder {
@@ -83,6 +86,107 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Cadastro de Ordem de Serviço</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+    body {
+        background-color: #f0f8ff;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container {
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+
+    .card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(13, 110, 253, 0.1);
+        border: none;
+    }
+
+    .card-header {
+        background-color: #0d6efd;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        padding: 16px 0;
+        border-radius: 12px 12px 0 0;
+        box-shadow: 0 0 5px rgba(13, 110, 253, 0.4);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #0056b3;
+    }
+
+    .form-control,
+    .form-select {
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 10px 14px;
+        box-shadow: 0 0 5px rgba(13, 110, 253, 0.1);
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #0a58ca !important;
+        box-shadow: 0 0 8px rgba(13, 110, 253, 0.6);
+        outline: none;
+        background-color: #fff;
+    }
+
+    .btn-success {
+        background-color: #0d6efd;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 10px 20px;
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-success:hover {
+        background-color: #0056b3;
+        box-shadow: 0 6px 14px rgba(13, 110, 253, 0.4);
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-weight: 500;
+        color: white;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .form-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .alert {
+        border-radius: 8px;
+        font-size: 0.95rem;
+        padding: 12px;
+    }
+
+    ::placeholder {
+        color: #999;
+    }
+
+    input[readonly] {
+        background-color: #e9ecef;
+    }
+</style>
+
 </head>
 <body class="bg-light">
     <div class="container mt-5 mb-5">

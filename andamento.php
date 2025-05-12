@@ -1,5 +1,8 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "seu_banco");
+include 'verificar_sessao.php'; // Inclui a verificação
+verificarSessao(); // Verifica se o usuário está autenticado
+
+include 'conexao.php';
 
 $id = $_GET['id'];
 
@@ -8,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $situacao = $_POST['situacao'];
     $andamento_id = $_POST['andamento_id'];
 
-    $conn->query("
+    $conexao->query("
         UPDATE ordens_servico 
         SET valor_outros = '$valor_outros', 
             situacao = '$situacao', 
@@ -17,14 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ");
 
     // Atualiza dataAtualizacao na tabela andamento
-    $conn->query("UPDATE andamento SET dataAtualizacao = NOW() WHERE id = $andamento_id");
+    $conexao->query("UPDATE andamento SET dataAtualizacao = NOW() WHERE id = $andamento_id");
 
     header("Location: listar_os.php");
     exit;
 }
 
-$os = $conn->query("SELECT * FROM ordens_servico WHERE id = $id")->fetch_assoc();
-$andamentos = $conn->query("SELECT * FROM andamento WHERE situacao = 'Ativo'");
+$os = $conexao->query("SELECT * FROM ordens_servico WHERE id = $id")->fetch_assoc();
+$andamentos = $conexao->query("SELECT * FROM andamento WHERE situacao = 'Ativo'");
 ?>
 
 <!DOCTYPE html>

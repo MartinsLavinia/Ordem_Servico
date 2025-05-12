@@ -1,5 +1,8 @@
 <?php
 session_start();
+include 'verificar_sessao.php'; // Inclui a verificação
+verificarSessao(); // Verifica se o usuário está autenticado
+
 include 'conexao.php';
 
 // Verifica se o cliente está logado

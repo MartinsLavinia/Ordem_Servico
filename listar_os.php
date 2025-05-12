@@ -1,10 +1,14 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "oscd_lamanna");
+include 'verificar_sessao.php'; // Inclui a verificação
+verificarSessao(); // Verifica se o usuário está autenticado
+
+include 'conexao.php';
+$conexao = new mysqli("localhost", "root", "", "oscd_lamanna");
 
 $tecnico_id = 1; // Substitua pelo ID real do técnico logado
 
 $sql = "SELECT * FROM `OS` WHERE CodigoColaborador = $tecnico_id";
-$result = $conn->query($sql);
+$result = $conexao->query($sql);
 ?>
 
 <!DOCTYPE html>

@@ -1,5 +1,8 @@
 <?php
 session_start();
+include 'verificar_sessao.php'; // Inclui a verificação
+verificarSessao(); // Verifica se o usuário está autenticado
+
 include("conexao.php");
 
 $email = $_POST['email'];
@@ -31,13 +34,13 @@ if ($result->num_rows === 1) {
     } else {
         echo "<script>
             alert('Senha incorreta!');
-            window.location.href = 'login.php';
+            window.location.href = 'login-usuario.php';
         </script>";
     }
 } else {
     echo "<script>
         alert('Email não encontrado!');
-        window.location.href = 'login.php';
+        window.location.href = 'login-usuario.php';
     </script>";
 }
 ?>

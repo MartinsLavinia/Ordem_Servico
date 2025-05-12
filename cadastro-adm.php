@@ -59,11 +59,13 @@ if ($result) {
   <div class="container-fluid h-custom">
     <div class="row d-flex justify-content-center align-items-start h-100 mt-5">
       <div class="col-md-9 col-lg-6 col-xl-5">
-        <img src="logo-verde.gif" class="floating animated" alt="GIF animado">
+        <img src="logo-verde.gif" class="floating animated" alt="GIF animado" style="margin-top: 100px;">
       </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+
+
         <form action="processa_cadastro_colaborador.php" method="POST" class="mt-4">
-          <h2 style="margin-top: 20px; font-weight: bold; text-align: left;">Cadastro - Colaborador</h2>
+          <h2 style="margin-top: 80px; margin-bottom: 20px; font-weight: bold; text-align: left;">Cadastro - Colaborador</h2>
           <!-- Nome input -->
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form3Example1">Nome</label>
@@ -146,6 +148,7 @@ if ($result) {
   padding: 1.2rem 0;
   text-align: center;
   width: 100%;
+  
   
 }
 

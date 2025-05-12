@@ -222,17 +222,18 @@ nav a {
       🔧 Ordem de Serviço
     </a>
     <nav class="d-flex align-items-center">
-      <a href="index.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Início</a>
-      <a href="cadastro.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Cadastrar OS</a>
+      <a href="criaros.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Cadastrar OS</a>
       <a href="consulta.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Consultar OS</a>
+      <a href="atualizacoes.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Atualizações</a>
       <a href="logout.php" class="nav-link text-danger mx-3 fw-semibold link-hover-red">Logout</a>
     </nav>
   </div>
 </header>
 
+<!-- Conteúdo da página com espaçamento para o cabeçalho fixo -->
 <div class="content" style="padding-top: 40px;">
   <div class="container mt-4">
-    <h2>Bem-vindo, <?= htmlspecialchars($_SESSION['nome'] ?? 'Usuário') ?>!</h2>
+    <h2>Bem-vindo ao Sistema de Ordem de Serviço</h2>
     <p>Aqui você pode cadastrar, consultar e gerenciar ordens de serviço.</p>
   </div>
 </div>

@@ -1,6 +1,5 @@
 <?php
-include 'verificar_sessao.php'; // Inclui a verificação
-verificarSessao(); // Verifica se o usuário está autenticado
+
 
 include 'conexao.php';
 
@@ -26,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$os = $conexao->query("SELECT * FROM ordens_servico WHERE id = $id")->fetch_assoc();
-$andamentos = $conexao->query("SELECT * FROM andamento WHERE situacao = 'Ativo'");
+$os = $conexao->query("SELECT * FROM oscd_lamanna WHERE id = $id")->fetch_assoc();
+$andamentos = $conexao->query("SELECT * FROM andamentoos WHERE situacao = 'Ativo'");
 ?>
 
 <!DOCTYPE html>

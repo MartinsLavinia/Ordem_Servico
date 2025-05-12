@@ -1,16 +1,7 @@
 <?php
 session_start();
-include 'verificar_sessao.php'; // Inclui a verificação
-verificarSessao(); // Verifica se o usuário está autenticado
 
 include 'conexao.php';
-
-if (!isset($_SESSION['colaborador_id'])) {
-    header("Location: criaros.php");
-    exit;
-}
-
-$colaboradorId = $_SESSION['colaborador_id'];
 
 // Aceitar serviço
 if (isset($_GET['aceitar']) && is_numeric($_GET['aceitar'])) {
@@ -85,7 +76,7 @@ $result = $conexao->query($sql);
     <?php endif; ?>
 
     <div class="text-center mt-4">
-        <a href="dashboard_colaborador.php" class="btn btn-secondary">🔙 Voltar</a>
+        <a href="listar_os.php" class="btn btn-secondary">🔙 Voltar</a>
     </div>
 </div>
 </body>

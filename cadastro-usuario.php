@@ -17,20 +17,17 @@
 <body>
 
 <header class="fixed-top bg-primary text-white p-3 shadow">
+
   <div class="container d-flex justify-content-between align-items-center">
     <h1 class="h4 m-0">Ordem de Serviço</h1>
       <nav>
    <nav class="nav-adm">
-  <a href="cadastro-adm.php" class="btn-adm" title="Área do Administrador">
+  <a href="login-adm.php" class="btn-adm" title="Área do Administrador">
     🔒
   </a>
 </nav>
 </nav>
-    <nav>
-      <a href="#" class="text-white me-3">Início</a>
-      <a href="#" class="text-white me-3">Sobre</a>
-      <a href="#" class="text-white">Contato</a>
-    </nav>
+
   </div>
 </header>
 
@@ -46,59 +43,26 @@
 
        <form action="processa_cadastro.php" method="POST">
 
-        <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Cadastro - Usuário</h2>
-          <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-            <p class="lead fw-normal mb-0 me-3">Entrar com</p>
-            <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-              <i class="fab fa-google"></i>
-            </button>
-
-            <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-              <i class="fab fa-linkedin-in"></i>
-            </button>
-          </div>
-
-          <div class="divider d-flex align-items-center my-4">
-            <p class="text-center fw-bold mx-3 mb-0">Ou</p>
-          </div>
-
-          <div data-mdb-input-init class="form-outline mb-4">
-          <label class="form-label" for="form3Example3">Nome</label>
-          <input type="text" name="nome" class="form-control form-control-lg" required />
-            
-          </div>
-
+     <h2 style="margin-bottom: 10px; font-weight: bold; text-align: left;">Cadastro - Usuário</h2>
+         
           <!-- Email input -->
           <div data-mdb-input-init class="form-outline mb-4">
           <label class="form-label" for="form3Example3">Email</label>
-          <input type="email" name="email" class="form-control form-control-lg" required />
-
-           
+       <input type="email" id="form3Example3" name="email" class="form-control input-menor" required />
+  
           </div>
 
           <!-- Password input -->
           <div data-mdb-input-init class="form-outline mb-3">
           <label class="form-label" for="form3Example4">Senha</label>
-          <input type="password" name="senha" class="form-control form-control-lg" required />
+         <input type="password" id="form3Example3" name="senha" class="form-control input-menor" required />
           </div>
 
-          <div class="d-flex justify-content-between align-items-center">
-            <!-- Checkbox -->
-            <div class="form-check mb-0">
-              <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-              <label class="form-check-label" for="form2Example3">
-                Lembre de mim
-              </label>
-            </div>
-            <a href="#!" class="text-body">Esqueceu a senha?</a>
-          </div>
 
           <div class="text-center text-lg-start mt-4 pt-2">
           <button type="submit" class="btn btn-primary btn-lg">Cadastrar</button>
             <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="login-usuario.php"
                 class="link-danger" >Entrar</a></p>
-                 <p class="small fw-bold mt-2 pt-1 mb-0">É um colaborador? <a href="login-adm.php"
-                class="link-danger">Cadastre-se</a></p>
           </div>
           </div>
 
@@ -157,7 +121,7 @@
 }
 
 .btn-adm:hover {
-    background-color: #004a99;
+    background-color: #0056b3;
 }
 
 

@@ -19,11 +19,11 @@
 <header class="fixed-top bg-primary text-white p-3 shadow">
   <div class="container d-flex justify-content-between align-items-center">
     <h1 class="h4 m-0">Ordem de Serviço</h1>
-    <nav>
-      <a href="#" class="text-white me-3">Início</a>
-      <a href="#" class="text-white me-3">Sobre</a>
-      <a href="#" class="text-white">Contato</a>
-    </nav>
+      <nav class="nav-adm">
+  <a href="login-adm.php" class="btn-adm" title="Área do Administrador">
+    🔒
+  </a>
+</nav>
   </div>
 </header>
 
@@ -52,10 +52,8 @@
 
   <button type="submit" class="btn btn-primary btn-lg">Login</button>
 
-   <p class="small fw-bold mt-2 pt-1 mb-0">Possui conta? <a href="login-usuario.php"
-                class="link-danger" >Entrar</a></p>
-                 <p class="small fw-bold mt-2 pt-1 mb-0">É um colaborador? <a href="login-usuario.php"
-                class="link-danger">Cadastre-se</a></p>
+   <p class="small fw-bold mt-2 pt-1 mb-0">Não possui conta? <a href="cadastro-usuario.php"
+                class="link-danger" >Cadastre-se</a></p>
 </form>
 
       </div>
@@ -89,6 +87,31 @@
 </section>
 
 <style>
+  .nav-adm {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+}
+
+.btn-adm {
+    background-color: #0056b3;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-adm:hover {
+    background-color: #0056b3;
+}
   /* Destaque para os campos de formulário */
 .form-outline input {
   border: 2px solid #0d6efd !important; /* azul do Bootstrap */

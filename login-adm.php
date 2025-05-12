@@ -19,15 +19,14 @@
 <header class="fixed-top custom-green text-white p-3 shadow">
   <div class="container d-flex justify-content-between align-items-center">
     <h1 class="h4 m-0">Ordem de Serviço</h1>
-    <nav>
-      <a href="#" class="text-white me-3">Início</a>
-      <a href="#" class="text-white me-3">Sobre</a>
-      <a href="#" class="text-white">Contato</a>
-    </nav>
-  </div>
+      <nav class="nav-cliente">
+  <a href="cadastro-usuario.php" class="btn-adm" title="Área do Cliente">👤</a>
+  </a>
+</nav>
 </header>
 
-<section class="vh-100">
+<section class="vh-100 section-content">>
+
   <div class="container-fluid h-custom">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-md-9 col-lg-6 col-xl-5">
@@ -38,52 +37,28 @@
  
       
       <form action="processa_login_colaborador.php" method="POST">
-  <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Login - Bem-vindo, Colaborador!</h2>
-  
-  <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-    <p class="lead fw-normal mb-0 me-3">Entrar com</p>
-    <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-      <i class="fab fa-google"></i>
-    </button>
-
-    <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-floating mx-1">
-      <i class="fab fa-linkedin-in"></i>
-    </button>
-  </div>
-
-  <div class="divider d-flex align-items-center my-4">
-    <p class="text-center fw-bold mx-3 mb-0">Ou</p>
-  </div>
+  <h2 style="margin-bottom: 10px; font-weight: bold; text-align: left;">
+  Login - Bem-vindo, Colaborador!
+</h2>
 
   <!-- Email input -->
   <div data-mdb-input-init class="form-outline mb-4">
     <label class="form-label" for="form3Example3">Email</label>
-    <input type="email" id="form3Example3" name="email" class="form-control form-control-lg" required />
+    <input type="email" id="form3Example3" name="email" class="form-control input-menor" required />
   </div>
 
   <!-- Password input -->
   <div data-mdb-input-init class="form-outline mb-3">
     <label class="form-label" for="form3Example4">Senha</label>
-    <input type="password" id="form3Example4" name="senha" class="form-control form-control-lg" required />
+   <input type="password" id="form3Example3" name="senha" class="form-control input-menor" required />
   </div>
 
-  <div class="d-flex justify-content-between align-items-center">
-    <!-- Checkbox -->
-    <div class="form-check mb-0">
-      <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-      <label class="form-check-label" for="form2Example3">
-        Lembre de mim
-      </label>
-    </div>
-    <a href="#!" class="text-body">Esqueceu a senha?</a>
-  </div>
+ <div class="text-center text-lg-start mt-4 pt-2">
+  <button type="submit" class="btn btn-primary btn-lg" style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Login</button>
+  <p class="small fw-bold mt-3 pt-1 mb-0">Não tem cadastro, colaborador? <a href="cadastro-adm.php" class="link-danger custom-link">Cadastre-se</a></p>
+</div>
 
-  <div class="text-center text-lg-start mt-4 pt-2">
-    <button type="submit" class="btn btn-primary btn-lg" style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Login</button>
-    <p class="small fw-bold mt-2 pt-1 mb-0">Não tem cadastro, colaborador? <a href="cadastro-adm.php" class="link-danger custom-link">Cadastre-se</a></p>
-  </div>
 </form>
-
 
 
       </div>
@@ -91,7 +66,7 @@
   </div>
   
   <!-- Footer -->
-  <div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 custom-green">
+    <div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 custom-green">
 
     <div class="text-white mb-3 mb-md-0">
       Copyright © 2025. Aims.
@@ -115,9 +90,16 @@
     </div>
     <!-- Right -->
   </div>
+  
 </section>
 
 <style>
+
+  .input-menor {
+  max-width: 300px; /* ou 250px, 200px — escolha o tamanho ideal */
+  width: 100%;
+}
+
   /* Cor personalizada para os links */
 .custom-link {
   color: #FF5733; /* Escolha a cor que você preferir */
@@ -126,6 +108,35 @@
 .custom-link:hover {
   color: #C70039; /* Cor do link ao passar o mouse (efeito hover) */
 }
+
+
+ .nav-cliente {
+    position: absolute;
+    top: 20px;   /* Mais afastado do topo */
+    left: 20px;  /* Mais afastado da esquerda */
+    z-index: 1000;
+  }
+
+ .btn-cliente {
+  background-color:rgb(66, 160, 88);
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px; /* Emoji maior */
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+  .btn-cliente:hover {
+    background-color: #218838;
+  }
+
 
 /* Borda verde ao redor dos inputs */
 #form3Example3,
@@ -173,7 +184,7 @@
   html, body {
     height: 100%;
     margin: 0;
-    overflow: hidden; /* impede rolagem */
+    overflow-y: auto
   }
 
   /* Oculta todos os elementos animáveis até a classe "animated" ser adicionada */

@@ -31,43 +31,55 @@ if ($result) {
 <header class="fixed-top custom-green text-white p-3 shadow">
   <div class="container d-flex justify-content-between align-items-center">
     <h1 class="h4 m-0">Ordem de Serviço</h1>
-    <nav class="nav-cliente">
-      <a href="cadastro-usuario.php" class="btn-cliente" title="Área do Cliente">👤</a>
-    </nav>
-    <nav>
-      <a href="#" class="text-white me-3">Início</a>
-      <a href="#" class="text-white me-3">Sobre</a>
-      <a href="#" class="text-white">Contato</a>
-    </nav>
+      <nav class="nav-cliente">
+  <a href="cadastro-usuario.php" class="btn-adm" title="Área do Cliente">👤</a>
+  </a>
+</nav>
   </div>
 </header>
 
-<section class="vh-100">
+
+<?php if (isset($_GET['cadastro']) && $_GET['cadastro'] == 'sucesso'): ?>
+  <div id="mensagem" class="alert alert-success text-center shadow" style="position: absolute; top: -60px; left: 0; right: 0; margin: auto; z-index: 999;">
+    Cadastro realizado!
+  </div>
+<?php endif; ?>
+
+<script>
+  const mensagem = document.getElementById("mensagem");
+  if (mensagem) {
+    setTimeout(() => {
+      window.location.href = "login-adm.php";
+    }, 5000); // 5 segundos
+  }
+</script>
+
+
+<section class="vh-100 section-content">
   <div class="container-fluid h-custom">
-    <div class="row d-flex justify-content-center align-items-center h-100">
+    <div class="row d-flex justify-content-center align-items-start h-100 mt-5">
       <div class="col-md-9 col-lg-6 col-xl-5">
         <img src="logo-verde.gif" class="floating animated" alt="GIF animado">
       </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-        <form action="processa_cadastro_colaborador.php" method="POST">
-          <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Cadastro - Colaborador</h2>
+        <form action="processa_cadastro_colaborador.php" method="POST" class="mt-4">
+          <h2 style="margin-top: 20px; font-weight: bold; text-align: left;">Cadastro - Colaborador</h2>
           <!-- Nome input -->
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form3Example1">Nome</label>
-            <input type="text" id="form3Example1" name="NomeColaborador" class="form-control form-control-lg" required />
+            <input type="text" id="form3Example1" name="NomeColaborador" class="form-control input-menor" required />
           </div>
           <!-- Email input -->
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form3Example2">Email</label>
-            <input type="email" id="form3Example2" name="email" class="form-control form-control-lg" required />
+            <input type="email" id="form3Example2" name="email" class="form-control input-menor" required />
           </div>
           <!-- Campo Select para Cargo -->
           <div class="form-outline mb-4">
             <label class="form-label" for="form3Example2">Cargo</label>
-            <select id="cargoSelect" name="CodigoCargo" class="form-control form-control-lg" required>
+            <select id="cargoSelect" name="CodigoCargo" class="form-control input-menor" required>
               <option value="" disabled selected>Selecione o Cargo</option>
               <?php
-              // Conectar ao banco e buscar os cargos
               include('conexao.php');
               $sql = "SELECT * FROM cargo";
               $result = $conexao->query($sql);
@@ -77,61 +89,125 @@ if ($result) {
               ?>
             </select>
           </div>
-
           <!-- Senha input -->
           <div data-mdb-input-init class="form-outline mb-3">
             <label class="form-label" for="form3Example3">Senha</label>
-            <input type="password" id="form3Example3" name="senha" class="form-control form-control-lg" required />
+            <input type="password" id="form3Example3" name="senha" class="form-control input-menor" required />
           </div>
+          
           <!-- Botão de Cadastro -->
-          <div class="text-center text-lg-start mt-4 pt-2">
-            <button type="submit" class="btn btn-primary btn-lg" style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Cadastrar</button>
-          </div>
-          <p class="small fw-bold mt-2 pt-1 mb-0">Possui cadastro? Faça <a href="login-adm.php" class="link-danger custom-link">Login</a></p>
+<div class="text-center text-lg-start mt-4 pt-2">
+  <button type="submit" class="btn btn-primary btn-lg" style="padding-left: 2.5rem; padding-right: 2.5rem; background-color:#2B7540;">Cadastrar</button>
+  <p class="small fw-bold m-0 p-0 mt-3">Possui cadastro? Faça <a href="login-adm.php" class="link-danger custom-link">login</a></p>
+</div>
+
+        
+   
+  </div>
         </form>
       </div>
-    </div>
+    </div> 
   </div>
-  
-  <!-- Footer -->
+
   <div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 custom-green">
     <div class="text-white mb-3 mb-md-0">
       Copyright © 2025. Aims.
     </div>
+    <!-- Copyright -->
+
+    <!-- Right -->
     <div>
-      <a href="#!" class="text-white me-4"><i class="fab fa-facebook-f"></i></a>
-      <a href="#!" class="text-white me-4"><i class="fab fa-twitter"></i></a>
-      <a href="#!" class="text-white me-4"><i class="fab fa-google"></i></a>
-      <a href="#!" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#!" class="text-white me-4">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+      <a href="#!" class="text-white me-4">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="#!" class="text-white me-4">
+        <i class="fab fa-google"></i>
+      </a>
+      <a href="#!" class="text-white">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
     </div>
+    <!-- Right -->
   </div>
+
 </section>
+ 
+
+
 
 <!-- Estilos CSS -->
 <style>
-  .nav-cliente {
-      position: absolute;
-      top: 10px;
-      left: 65px;
-      z-index: 1000;
+.custom-footer {
+  background-color: #2B7540;
+  color: white;
+  padding: 1.2rem 0;
+  text-align: center;
+  width: 100%;
+  
+}
+
+.custom-footer .social-links a {
+  color: white;
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+ /* Cor personalizada para os links */
+.custom-link {
+  color: #FF5733; /* Escolha a cor que você preferir */
+  padding-top: 10px;
+}
+
+.custom-link:hover {
+  color: #C70039; /* Cor do link ao passar o mouse (efeito hover) */
+}
+
+  .custom-green {
+  background-color: #2B7540 !important;
+}
+
+.custom-link {
+  padding-top: 10px;
+}
+
+
+  .input-menor {
+  max-width: 300px; /* ou 250px, 200px — escolha o tamanho ideal */
+  width: 100%;
+}
+
+ .nav-cliente {
+    position: absolute;
+    top: 20px;   /* Mais afastado do topo */
+    left: 20px;  /* Mais afastado da esquerda */
+    z-index: 1000;
   }
-  .btn-cliente {
-      background-color: #28a745;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      color: white;
-      border: none;
-      transition: background-color 0.3s ease;
-      text-decoration: none;
-  }
+
+ .btn-cliente {
+  background-color:rgb(66, 160, 88);
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px; /* Emoji maior */
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
   .btn-cliente:hover {
-      background-color: #218838;
+    background-color: #218838;
   }
+
+
   #form3Example1,
   #form3Example2,
   #cargoSelect,
@@ -179,7 +255,8 @@ if ($result) {
   html, body {
     height: 100%;
     margin: 0;
-    overflow: hidden;
+   overflow-y: auto;
+    
   }
 </style>
 

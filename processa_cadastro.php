@@ -4,7 +4,7 @@ include 'conexao.php';
 
 // Verifica se o formulário foi enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome = trim($_POST["nome"]);
+    $nome = trim($_POST["NomeCliente"]);
     $email = trim($_POST["email"]);
     $senha = $_POST["senha"];
 

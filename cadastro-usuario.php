@@ -44,11 +44,15 @@
        <form action="processa_cadastro.php" method="POST">
 
      <h2 style="margin-bottom: 10px; font-weight: bold; text-align: left;">Cadastro - Usuário</h2>
-         
+         <!-- Nome input -->
+          <div data-mdb-input-init class="form-outline mb-4">
+            <label class="form-label" for="form3Example1">Nome</label>
+            <input type="text" id="form1Example1" name="NomeCliente" class="form-control input-menor" required />
+          </div>
           <!-- Email input -->
           <div data-mdb-input-init class="form-outline mb-4">
           <label class="form-label" for="form3Example3">Email</label>
-       <input type="email" id="form3Example3" name="email" class="form-control input-menor" required />
+       <input type="email" id="form2Example2" name="email" class="form-control input-menor" required />
   
           </div>
 

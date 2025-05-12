@@ -186,6 +186,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </style>
 
 </head>
+
+<nav class="navbar navbar-expand-lg" style="background-color: #0d6efd;">
+  <div class="container-fluid">
+    <a class="navbar-brand text-white" href="#">🔧 Ordem de Serviço</a>
+    <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon text-white"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link text-white" href="criaros.php">Criar OS</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="consulta.php">Consultar</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="atualizacoes.php">Atualizações</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="logout.php">Sair</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
 <body class="bg-light">
     <div class="container mt-5 mb-5">
         <div class="row justify-content-center">

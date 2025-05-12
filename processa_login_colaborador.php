@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'email' => $email
             ];
 
-            header("Location: criaros.php");
+            header("Location: aceitar_servicos.php");
             exit();
         }
     }

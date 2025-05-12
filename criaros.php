@@ -1,5 +1,6 @@
 <?php
-include 'conexao.php'; // Inclua a conexão com o banco de dados
+session_start();
+include 'conexao.php';
 
 class ServiceOrder {
     private $conexao;
@@ -10,43 +11,40 @@ class ServiceOrder {
 
     private function generateNumeroOS() {
         $today = date('Ymd');
-        $stmt = $this->conexao->prepare("SELECT COUNT(*) AS total FROM OS WHERE NumeroOS LIKE ?");
-        $prefix = "OS$today%";
-        $stmt->bind_param("s", $prefix);
+        $prefix = "OS" . $today;
+        $stmt = $this->conexao->prepare("SELECT NumeroOS FROM OS WHERE NumeroOS LIKE ? ORDER BY NumeroOS DESC LIMIT 1");
+        $like = $prefix . "%";
+        $stmt->bind_param("s", $like);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
-        $countToday = $result['total'] + 1;
-        return "OS" . $today . str_pad($countToday, 3, "0", STR_PAD_LEFT);
+
+        if ($result) {
+            $lastNumero = $result['NumeroOS'];
+            $lastSeq = (int)substr($lastNumero, -3);
+            $newSeq = str_pad($lastSeq + 1, 3, "0", STR_PAD_LEFT);
+        } else {
+            $newSeq = "001";
+        }
+
+        return $prefix . $newSeq;
     }
 
     public function save($data) {
-        $numero_os   = $this->generateNumeroOS();
-        $date        = $data['date'];
-        $equipment   = $data['equipment'];
-        $defect      = $data['defect'] === 'Outros' ? $data['defect_other'] : $data['defect'];
-        $service     = $data['service'];
-        $defect_value = $data['defect_value'];
-        $service_value = $data['service_value'];
-        $total_value = $defect_value + $service_value;
-        $client_id   = $data['client_id'];
-        $client_name = $data['client_name'];
+        $numero_os     = $this->generateNumeroOS();
+        $date          = $data['date'];
+        $equipment     = $data['equipment'];
+        $defect        = $data['defect'] === 'Outros' ? $data['defect_other'] : $data['defect'];
+        $service       = $data['service'];
+        $defect_value  = floatval($data['defect_value']);
+        $service_value = floatval($data['service_value']);
+        $total_value   = $defect_value + $service_value;
+        $client_id     = $data['client_id'];
 
-        $stmt = $this->conexao->prepare("SELECT 1 FROM CLIENTE WHERE CodigoCliente = ?");
-        $stmt->bind_param("i", $client_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows === 0) {
-            $insertClient = $this->conexao->prepare("INSERT INTO CLIENTE (CodigoCliente, NomeCliente) VALUES (?, ?)");
-            $insertClient->bind_param("is", $client_id, $client_name);
-            $insertClient->execute();
-        }
-
+        // Insere OS diretamente, sem verificar cliente
         $insertOS = $this->conexao->prepare(
             "INSERT INTO OS (NumeroOS, Data, Equipamento, Defeito, Servico, ValorTotal, CodigoCliente)
              VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
-
         $insertOS->bind_param("ssssdsi", $numero_os, $date, $equipment, $defect, $service, $total_value, $client_id);
 
         if ($insertOS->execute()) {
@@ -60,19 +58,23 @@ class ServiceOrder {
 $mensagem = null;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $client_id = 123; // Simulação
-    $_POST['client_id'] = $client_id;
-
-    $serviceOrder = new ServiceOrder($conexao);
-    $numero_os = $serviceOrder->save($_POST);
-
-    if ($numero_os !== false) {
-        $mensagem = "✅ Cadastro enviado com sucesso!<br>🧾 Seu número de Ordem de Serviço é: <strong>$numero_os</strong>";
+    if (!isset($_SESSION['CodigoCliente'])) {
+        $mensagem = "❌ Erro: usuário não está logado.";
     } else {
-        $mensagem = "❌ Erro ao salvar a Ordem de Serviço. Tente novamente.";
+        $_POST['CodigoCliente'] = $_SESSION['CodigoCliente'];
+
+        $serviceOrder = new ServiceOrder($conexao);
+        $numero_os = $serviceOrder->save($_POST);
+
+        if ($numero_os !== false) {
+            $mensagem = "✅ Cadastro enviado com sucesso!<br>🧾 Seu número de Ordem de Serviço é: <strong>$numero_os</strong>";
+        } else {
+            $mensagem = "❌ Erro ao salvar a Ordem de Serviço. Tente novamente.";
+        }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-BR">

@@ -183,34 +183,63 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     input[readonly] {
         background-color: #e9ecef;
     }
+
+    .card-body2 {
+        margin-bottom: 150px;
+    }
+
+.link-hover-blue::after,
+.link-hover-red::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  height: 2px;
+  width: 0;
+  transition: width 0.3s ease;
+}
+.link-hover-blue:hover::after {
+  width: 100%;
+  background-color: #0d6efd;
+}
+.link-hover-red:hover::after {
+  width: 100%;
+  background-color: red;
+}
+nav a {
+  position: relative;
+}
+
+
+
 </style>
 
 </head>
 
-<nav class="navbar navbar-expand-lg" style="background-color: #0d6efd;">
-  <div class="container-fluid">
-    <a class="navbar-brand text-white" href="#">🔧 Ordem de Serviço</a>
-    <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon text-white"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link text-white" href="criaros.php">Criar OS</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="consulta.php">Consultar</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="atualizacoes.php">Atualizações</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="logout.php">Sair</a>
-        </li>
-      </ul>
-    </div>
+<header class=" top-0 w-100 shadow-sm" style="z-index: 1030; height: 80px;">
+  <div class="bg-white bg-opacity-75 px-4 py-3 d-flex justify-content-between align-items-center" style="backdrop-filter: blur(10px);">
+    <a href="index.php" class="text-decoration-none text-primary fs-4 fw-bold">
+      🔧 Ordem de Serviço
+    </a>
+    <nav class="d-flex align-items-center">
+      <a href="index.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Início</a>
+      <a href="cadastro.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Cadastrar OS</a>
+      <a href="consulta.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Consultar OS</a>
+      <a href="logout.php" class="nav-link text-danger mx-3 fw-semibold link-hover-red">Logout</a>
+    </nav>
   </div>
-</nav>
+</header>
+
+<div class="content" style="padding-top: 40px;">
+  <div class="container mt-4">
+    <h2>Bem-vindo, <?= htmlspecialchars($_SESSION['nome'] ?? 'Usuário') ?>!</h2>
+    <p>Aqui você pode cadastrar, consultar e gerenciar ordens de serviço.</p>
+  </div>
+</div>
+
+
+
+
 
 
 <body class="bg-light">
@@ -290,90 +319,126 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
             </div>
         </div>
-        <div class="card-body">
-                <!-- Link de voltar para consulta com seta para a direita -->
-                <a href="consulta.php" class="btn btn-secondary mb-3 float-end">
-                    Ir para Consulta <i class="bi bi-arrow-right"></i>
-                </a>
+            <div class="card-body2">
+                    <!-- Link de voltar para consulta com seta para a direita -->
+                    <a href="consulta.php" class="btn btn-secondary mb-3 float-end">
+                        Ir para Consulta <i class="bi bi-arrow-right"></i>
+                    </a>
             </div>
+        </div>
+
+        <script>
+        const defeitosPorServico = {
+            "Reparo": {
+                "Tela quebrada": 250.00,
+                "Não liga": 300.00,
+                "Lento": 180.00,
+                "Superaquecendo": 200.00,
+                "Travando": 170.00,
+                "Sem som": 150.00,
+                "Sem imagem": 160.00
+            },
+            "Troca de peça": {
+                "Tela quebrada": 350.00,
+                "Não liga": 400.00,
+                "Lento": 250.00
+            },
+            "Limpeza": {
+                "Lento": 100.00,
+                "Travando": 120.00
+            },
+            "Instalação": {
+                "Instalação de software": 80.00,
+                "Instalação de hardware": 100.00
+            },
+            "Outros": {
+                "Outros": 50.00
+            }
+        };
+
+        function atualizaDefeitos() {
+            const serviceSelect = document.getElementById("service");
+            const defectSelect = document.getElementById("defect");
+            const outroBox = document.getElementById("outroDefeitoBox");
+
+            defectSelect.innerHTML = '<option value="">Selecione...</option>';
+            const defeitos = defeitosPorServico[serviceSelect.value] || {};
+
+            if (serviceSelect.value === "Outros") {
+                outroBox.style.display = "block";
+            } else {
+                outroBox.style.display = "none";
+            }
+
+            for (const [defeito, valor] of Object.entries(defeitos)) {
+                const option = document.createElement("option");
+                option.value = defeito;
+                option.text = defeito;
+                defectSelect.appendChild(option);
+            }
+
+            atualizaValorTotal();
+        }
+
+        function atualizaValorTotal() {
+            const serviceSelect = document.getElementById("service");
+            const defectSelect = document.getElementById("defect");
+
+            const defectValue = defeitosPorServico[serviceSelect.value]?.[defectSelect.value] || 0;
+            const serviceValue = {
+                "Reparo": 100,
+                "Troca de peça": 150,
+                "Limpeza": 80,
+                "Instalação": 120,
+                "Outros": 50
+            }[serviceSelect.value] || 50;
+
+            document.getElementById("total_value").value = (defectValue + serviceValue).toFixed(2);
+            document.getElementById("service_value").value = serviceValue;
+            document.getElementById("defect_value").value = defectValue;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            atualizaDefeitos();
+        });
+        </script>
     </div>
 
-    <script>
-    const defeitosPorServico = {
-        "Reparo": {
-            "Tela quebrada": 250.00,
-            "Não liga": 300.00,
-            "Lento": 180.00,
-            "Superaquecendo": 200.00,
-            "Travando": 170.00,
-            "Sem som": 150.00,
-            "Sem imagem": 160.00
-        },
-        "Troca de peça": {
-            "Tela quebrada": 350.00,
-            "Não liga": 400.00,
-            "Lento": 250.00
-        },
-        "Limpeza": {
-            "Lento": 100.00,
-            "Travando": 120.00
-        },
-        "Instalação": {
-            "Instalação de software": 80.00,
-            "Instalação de hardware": 100.00
-        },
-        "Outros": {
-            "Outros": 50.00
-        }
-    };
+    <footer class="text-white pt-5 pb-4" style="background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('engrenagens.jpg') center center / cover no-repeat;">
+  <div class="container text-md-left">
+    <div class="row text-center text-md-start">
 
-    function atualizaDefeitos() {
-        const serviceSelect = document.getElementById("service");
-        const defectSelect = document.getElementById("defect");
-        const outroBox = document.getElementById("outroDefeitoBox");
+      <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mb-4">
+        <h5 class="text-uppercase fw-bold text-primary mb-3">🔧 Ordem de Serviço</h5>
+        <p>Sistema eficiente para gerenciamento de atendimentos, reparos e controle de serviços técnicos.</p>
+      </div>
 
-        defectSelect.innerHTML = '<option value="">Selecione...</option>';
-        const defeitos = defeitosPorServico[serviceSelect.value] || {};
+      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">Navegação</h6>
+        <ul class="list-unstyled">
+          <li><a href="criaros.php" class="text-white text-decoration-none">Cadastrar OS</a></li>
+          <li><a href="consulta.php" class="text-white text-decoration-none">Consultar OS</a></li>
+          <li><a href="atualizacoes.php" class="text-white text-decoration-none">Atualizações</a></li>
+          <li><a href="logout.php" class="text-white text-decoration-none">Logout</a></li>
+        </ul>
+      </div>
 
-        if (serviceSelect.value === "Outros") {
-            outroBox.style.display = "block";
-        } else {
-            outroBox.style.display = "none";
-        }
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">Contato</h6>
+        <p><i class="bi bi-geo-alt-fill me-2"></i> Rua Exemplo, 123 - Centro</p>
+        <p><i class="bi bi-envelope-fill me-2"></i> suporte@osistema.com</p>
+        <p><i class="bi bi-phone-fill me-2"></i> (11) 99999-9999</p>
+      </div>
 
-        for (const [defeito, valor] of Object.entries(defeitos)) {
-            const option = document.createElement("option");
-            option.value = defeito;
-            option.text = defeito;
-            defectSelect.appendChild(option);
-        }
-
-        atualizaValorTotal();
-    }
-
-    function atualizaValorTotal() {
-        const serviceSelect = document.getElementById("service");
-        const defectSelect = document.getElementById("defect");
-
-        const defectValue = defeitosPorServico[serviceSelect.value]?.[defectSelect.value] || 0;
-        const serviceValue = {
-            "Reparo": 100,
-            "Troca de peça": 150,
-            "Limpeza": 80,
-            "Instalação": 120,
-            "Outros": 50
-        }[serviceSelect.value] || 50;
-
-        document.getElementById("total_value").value = (defectValue + serviceValue).toFixed(2);
-        document.getElementById("service_value").value = serviceValue;
-        document.getElementById("defect_value").value = defectValue;
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        atualizaDefeitos();
-    });
-    </script>
     </div>
+  </div>
+
+  <div class="text-center mt-4 border-top pt-3" style="font-size: 0.9rem;">
+    &copy; <?= date('Y') ?> Ordem de Serviço. Todos os direitos reservados.
+  </div>
+</footer>
+
+
     
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>

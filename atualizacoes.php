@@ -1,114 +1,114 @@
 <?php
+// Inicia a sessão
 session_start();
+
+// Conexão com o banco de dados
 include("conexao.php");
 
-// Verifica se o colaborador está logado
-if (!isset($_SESSION['colaborador']) || !isset($_SESSION['colaborador']['codigo'])) {
-    echo "<div class='alert alert-danger text-center'>Erro: Colaborador não autenticado.</div>";
-    exit;
-}
+// Verifica se o parâmetro de exclusão foi enviado
+if (isset($_GET['excluir'])) {
+    $os_id = $_GET['excluir'];
 
-$colaboradorId = $_SESSION['colaborador']['codigo'];
-
-// Se o formulário de andamento for enviado
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $os_id = $_POST['os_id'];
-    $situacao = $_POST['situacao'];
-    $descricao = $_POST['descricao'];
-
-    // Inserir no histórico de andamento
-    $stmt = $conexao->prepare("INSERT INTO andamentoos (OS, Situacao, Descricao) VALUES (?, ?, ?)");
-    $stmt->bind_param("iss", $os_id, $situacao, $descricao);
+    // Primeiro, verifica se a OS está finalizada
+    $checkStatus = "SELECT Status FROM os WHERE OS = ?";
+    $stmt = $conexao->prepare($checkStatus);
+    $stmt->bind_param("i", $os_id);
+    $stmt->execute();
+    $stmt->bind_result($status);
+    $stmt->fetch();
+    $stmt->free_result(); // Libera o resultado para a próxima consulta
     
-    if ($stmt->execute()) {
-        echo "<div class='alert alert-success text-center'>Atualização salva com sucesso!</div>";
+    if ($status == 'Finalizada') {
+        // Excluir as atualizações relacionadas à OS
+        $deleteAndamento = "DELETE FROM andamentoos WHERE OS = ?";
+        $stmt = $conexao->prepare($deleteAndamento);
+        $stmt->bind_param("i", $os_id);
+        $stmt->execute();
+        $stmt->free_result(); // Libera o resultado para a próxima consulta
+        
+        // Excluir a própria OS
+        $deleteOS = "DELETE FROM os WHERE OS = ?";
+        $stmt = $conexao->prepare($deleteOS);
+        $stmt->bind_param("i", $os_id);
+        $stmt->execute();
+        
+        echo "<div class='alert alert-success text-center'>Ordem de serviço excluída com sucesso!</div>";
     } else {
-        echo "<div class='alert alert-danger text-center'>Erro ao salvar atualização.</div>";
+        echo "<div class='alert alert-danger text-center'>Não é possível excluir uma OS que não está finalizada.</div>";
     }
 }
 
-// Buscar OS em andamento para o colaborador
-$sql = "SELECT os.OS, os.NumeroOS, os.Data, os.Equipamento, os.Defeito, os.Servico, os.ValorTotal, cliente.NomeCliente
+// Consulta para buscar as ordens de serviço e seus respectivos históricos de atualizações
+$sql = "SELECT os.OS, os.NumeroOS, os.Equipamento, os.Defeito, os.Servico, os.ValorTotal, andamentoos.Situacao, andamentoos.Descricao, andamentoos.DataAtualizacao, os.Status
         FROM os
-        INNER JOIN cliente ON os.CodigoCliente = cliente.CodigoCliente
-        WHERE os.CodigoColaborador = ?";
+        LEFT JOIN andamentoos ON os.OS = andamentoos.OS
+        ORDER BY os.OS DESC";
 
-$stmt = $conexao->prepare($sql);
-$stmt->bind_param("i", $colaboradorId);
-$stmt->execute();
-$result = $stmt->get_result();
+$result = $conexao->query($sql);
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Andamento de Serviço</title>
+    <title>Histórico de Atualizações - Ordens de Serviço</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<header class=" top-0 w-100 shadow-sm" style="z-index: 1030; height: 80px;">
-  <div class="bg-white bg-opacity-75 px-4 py-3 d-flex justify-content-between align-items-center" style="backdrop-filter: blur(10px);">
-    <a href="index.php" class="text-decoration-none text-primary fs-4 fw-bold">
-      🔧 Ordem de Serviço
-    </a>
-    <nav class="d-flex align-items-center">
-      <a href="atualizacoes.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Início</a>
-      <a href="criaros.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Cadastrar OS</a>
-      <a href="consulta.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Consultar OS</a>
-      <a href="logout.php" class="nav-link text-danger mx-3 fw-semibold link-hover-red">Logout</a>
-    </nav>
-  </div>
-</header>
-
-<div class="content" style="padding-top: 40px;">
-  <div class="container mt-4">
-    <h2>Bem-vindo, <?= htmlspecialchars($_SESSION['nome'] ?? 'Usuário') ?>!</h2>
-    <p>Aqui você pode cadastrar, consultar e gerenciar ordens de serviço.</p>
-  </div>
-</div>
 <body>
 <div class="container mt-5">
-    <h2 class="mb-4 text-center">Selecione uma Ordem de Serviço para Atualizar</h2>
+    <h2 class="mb-4 text-center">Histórico de Atualizações - Ordens de Serviço</h2>
 
     <?php if ($result->num_rows > 0): ?>
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered align-middle text-center">
-            <thead class="table-primary">
-                <tr>
-                    <th>Número OS</th>
-                    <th>Cliente</th>
-                    <th>Equipamento</th>
-                    <th>Defeito</th>
-                    <th>Data</th>
-                    <th>Serviço</th>
-                    <th>Valor Total</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($row['NumeroOS']) ?></td>
-                        <td><?= htmlspecialchars($row['NomeCliente']) ?></td>
-                        <td><?= htmlspecialchars($row['Equipamento']) ?></td>
-                        <td><?= htmlspecialchars($row['Defeito']) ?></td>
-                        <td><?= htmlspecialchars(date('d/m/Y', strtotime($row['Data']))) ?></td>
-                        <td><?= htmlspecialchars($row['Servico']) ?></td>
-                        <td>R$ <?= number_format($row['ValorTotal'], 2, ',', '.') ?></td>
-                        <td>
-                            <a href="andamento.php?os_id=<?= $row['OS'] ?>" class="btn btn-sm btn-outline-primary">
-                                Atualizar
-                            </a>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
-    </div>
-<?php else: ?>
-    <div class="alert alert-info text-center">Você não tem ordens de serviço em andamento no momento.</div>
-<?php endif; ?>
+        <?php while ($row = $result->fetch_assoc()): ?>
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <strong>OS Nº: <?= htmlspecialchars($row['NumeroOS']) ?> - <?= htmlspecialchars($row['Equipamento']) ?></strong>
+                </div>
+                <div class="card-body">
+                    <p><strong>Defeito:</strong> <?= htmlspecialchars($row['Defeito']) ?></p>
+                    <p><strong>Serviço:</strong> <?= htmlspecialchars($row['Servico']) ?></p>
+                    <p><strong>Valor Total:</strong> R$ <?= number_format($row['ValorTotal'], 2, ',', '.') ?></p>
+
+                    <!-- Exibe o histórico de atualizações -->
+                    <h5 class="mt-4">Histórico de Atualizações:</h5>
+                    <ul class="list-group">
+                        <?php
+                        // Consulta o histórico de atualizações para esta OS
+                        $hist_sql = "SELECT Situacao, Descricao, DataAtualizacao FROM andamentoos WHERE OS = ? ORDER BY DataAtualizacao DESC";
+                        $hist_stmt = $conexao->prepare($hist_sql);
+                        $hist_stmt->bind_param("i", $row['OS']);
+                        $hist_stmt->execute();
+                        $hist_result = $hist_stmt->get_result();
+
+                        if ($hist_result->num_rows > 0):
+                            while ($hist_row = $hist_result->fetch_assoc()):
+                        ?>
+                                <li class="list-group-item">
+                                    <strong><?= date('d/m/Y H:i', strtotime($hist_row['DataAtualizacao'])) ?></strong><br>
+                                    <strong>Situação:</strong> <?= htmlspecialchars($hist_row['Situacao']) ?><br>
+                                    <strong>Descrição:</strong> <?= nl2br(htmlspecialchars($hist_row['Descricao'])) ?>
+                                </li>
+                        <?php endwhile; else: ?>
+                            <li class="list-group-item text-muted">Nenhuma atualização registrada ainda.</li>
+                        <?php endif; ?>
+                    </ul>
+
+                    <!-- Se a OS estiver finalizada, exibe a opção de excluir -->
+                    <?php if ($row['Status'] == 'Finalizada'): ?>
+                        <form method="get" class="mt-3">
+                            <input type="hidden" name="excluir" value="<?= $row['OS'] ?>">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Excluir Ordem de Serviço
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <p class="alert alert-warning">Nenhuma ordem de serviço encontrada.</p>
+    <?php endif; ?>
 
 </div>
 </body>

@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($verifica->num_rows > 0) {
         // Redireciona com erro
-        header("Location: cadastro.php?erro=email");
+        header("Location: cadastro-usuario.php?erro=email");
         exit();
     } else {
         // Cadastra o novo cliente

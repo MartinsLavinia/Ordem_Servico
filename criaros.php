@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 include 'conexao.php';
 
 class ServiceOrder {
@@ -39,9 +38,8 @@ class ServiceOrder {
         $defect_value  = floatval($data['defect_value']);
         $service_value = floatval($data['service_value']);
         $total_value   = $defect_value + $service_value;
-        $client_id     = $data['client_id'];
+        $client_id     = $data['client_id']; // Correto agora!
 
-        // Insere OS diretamente, sem verificar cliente
         $insertOS = $this->conexao->prepare(
             "INSERT INTO OS (NumeroOS, Data, Equipamento, Defeito, Servico, ValorTotal, CodigoCliente)
              VALUES (?, ?, ?, ?, ?, ?, ?)"
@@ -62,7 +60,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_SESSION['CodigoCliente'])) {
         $mensagem = "❌ Erro: usuário não está logado.";
     } else {
-        $_POST['CodigoCliente'] = $_SESSION['CodigoCliente'];
+        // Corrigido aqui:
+        $_POST['client_id'] = $_SESSION['CodigoCliente'];
 
         $serviceOrder = new ServiceOrder($conexao);
         $numero_os = $serviceOrder->save($_POST);

@@ -50,28 +50,8 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <title>Consulta de Ordens de Serviço</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
     <style>
-        .link-hover-blue::after,
-        .link-hover-red::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        height: 2px;
-        width: 0;
-        transition: width 0.3s ease;
-        }
-        .link-hover-blue:hover::after {
-        width: 100%;
-        background-color: #0d6efd;
-        }
-        .link-hover-red:hover::after {
-        width: 100%;
-        background-color: red;
-        }
-        nav a {
-        position: relative;
-        }
         .card-body {
             margin-bottom: 35px;
         }
@@ -218,10 +198,6 @@ $result = $stmt->get_result();
             </tbody>
         </table>
     </div>
-
-    <div class="text-end card-body">
-        <a href="criaros.php" class="btn btn-secondary mt-3">🔙 Cadastrar Outra OS</a>
-    </div>
 <?php else: ?>
 
         <div class="alert alert-warning">❌ Nenhuma ordem de serviço encontrada com os critérios informados.</div>
@@ -239,7 +215,7 @@ function imprimir(numero_os) {
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+<BR><BR><BR>
 <footer class="text-white pt-5 pb-4" style="background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('engrenagens.jpg') center center / cover no-repeat;">
   <div class="container text-md-left">
     <div class="row text-center text-md-start">

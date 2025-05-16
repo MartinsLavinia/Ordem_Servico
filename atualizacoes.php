@@ -56,6 +56,21 @@ $result = $conexao->query($sql);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
+
+<header class=" top-0 w-100 shadow-sm" style="z-index: 1030; height: 80px;">
+  <div class="bg-white bg-opacity-75 px-4 py-3 d-flex justify-content-between align-items-center" style="backdrop-filter: blur(10px);">
+    <a href="index.php" class="text-decoration-none text-primary fs-4 fw-bold">
+      🔧 Ordem de Serviço
+    </a>
+    <nav class="d-flex align-items-center">
+      <a href="criaros.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Cadastrar OS</a>
+      <a href="consulta.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Consultar OS</a>
+      <a href="atualizacoes.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Atualizações</a>
+      <a href="logout.php" class="nav-link text-danger mx-3 fw-semibold link-hover-red">Logout</a>
+    </nav>
+  </div>
+</header>
+
 <div class="container mt-5">
     <h2 class="mb-4 text-center">Histórico de Atualizações - Ordens de Serviço</h2>
 
@@ -111,5 +126,40 @@ $result = $conexao->query($sql);
     <?php endif; ?>
 
 </div>
+
+<footer class="text-white pt-5 pb-4" style="background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('engrenagens.jpg') center center / cover no-repeat;">
+  <div class="container text-md-left">
+    <div class="row text-center text-md-start">
+
+      <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mb-4">
+        <h5 class="text-uppercase fw-bold text-primary mb-3">🔧 Ordem de Serviço</h5>
+        <p>Sistema eficiente para gerenciamento de atendimentos, reparos e controle de serviços técnicos.</p>
+      </div>
+
+      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">Navegação</h6>
+        <ul class="list-unstyled">
+          <li><a href="criaros.php" class="text-white text-decoration-none">Cadastrar OS</a></li>
+          <li><a href="consulta.php" class="text-white text-decoration-none">Consultar OS</a></li>
+          <li><a href="atualizacoes.php" class="text-white text-decoration-none">Atualizações</a></li>
+          <li><a href="logout.php" class="text-white text-decoration-none">Logout</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">Contato</h6>
+        <p><i class="bi bi-geo-alt-fill me-2"></i> Rua Exemplo, 123 - Centro</p>
+        <p><i class="bi bi-envelope-fill me-2"></i> suporte@osistema.com</p>
+        <p><i class="bi bi-phone-fill me-2"></i> (11) 99999-9999</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="text-center mt-4 border-top pt-3" style="font-size: 0.9rem;">
+    &copy; <?= date('Y') ?> Ordem de Serviço. Todos os direitos reservados.
+  </div>
+</footer>
+
 </body>
 </html>

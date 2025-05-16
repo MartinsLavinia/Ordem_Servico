@@ -319,12 +319,6 @@ nav a {
                 </div>
             </div>
         </div>
-            <div class="card-body2">
-                    <!-- Link de voltar para consulta com seta para a direita -->
-                    <a href="consulta.php" class="btn btn-secondary mb-3 float-end">
-                        Ir para Consulta <i class="bi bi-arrow-right"></i>
-                    </a>
-            </div>
         </div>
 
         <script>

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 12/05/2025 às 19:58
+-- Tempo de geração: 16/05/2025 às 16:28
 -- Versão do servidor: 10.4.32-MariaDB
--- Versão do PHP: 8.2.12
+-- Versão do PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -32,30 +32,19 @@ CREATE TABLE `andamentoos` (
   `OS` int(11) DEFAULT NULL,
   `Situacao` varchar(255) DEFAULT NULL,
   `Descricao` text DEFAULT NULL,
-  `DataAtualizacao` timestamp NOT NULL DEFAULT current_timestamp(),
-  `NumeroOS` varchar(50) DEFAULT NULL
+  `DataAtualizacao` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `andamentoos`
 --
 
-INSERT INTO `andamentoos` (`id`, `OS`, `Situacao`, `Descricao`, `DataAtualizacao`, `NumeroOS`) VALUES
-(1, 6, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 13:51:52', NULL),
-(2, 6, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 13:52:47', NULL),
-(3, 4, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 13:55:56', NULL),
-(4, 4, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 14:03:44', NULL),
-(5, 4, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 14:20:36', NULL),
-(6, 6, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 14:20:49', NULL),
-(7, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 14:20:58', NULL),
-(8, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 14:30:26', NULL),
-(9, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 14:41:43', NULL),
-(10, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 14:54:01', NULL),
-(11, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 14:54:39', NULL),
-(12, 5, 'Em andamento', 'serviço preste a terminar', '2025-05-12 14:59:53', NULL),
-(13, 5, 'Em andamento', 'serviço preste a terminar', '2025-05-12 15:01:32', NULL),
-(14, 4, 'Em andamento', 'Peça chegou quase finalizando', '2025-05-12 15:02:46', NULL),
-(15, 7, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-12 16:47:18', NULL);
+INSERT INTO `andamentoos` (`id`, `OS`, `Situacao`, `Descricao`, `DataAtualizacao`) VALUES
+(28, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-16 12:46:15'),
+(29, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-16 12:46:23'),
+(30, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-16 12:46:23'),
+(31, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-16 12:46:23'),
+(32, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-16 14:03:24');
 
 -- --------------------------------------------------------
 
@@ -104,7 +93,7 @@ CREATE TABLE `cliente` (
 
 INSERT INTO `cliente` (`CodigoCliente`, `NomeCliente`, `email`, `senha`) VALUES
 (123, 'amanda', '', ''),
-(124, '', 'nicolas.hrsantos2007@gmail.com', '$2y$10$Z459RvJ.3BZ5ungMjp2OkuUwp.Ye3xGX.DuvrNENgTHILk/p9SvZC');
+(124, 'Lavinia', 'lavinia@gmail.com', '$2y$10$x26RMsgZzn.6KQyIxx7LxOTRZ0lEhpEWbKFuJRrYsZLFn05jlsNJy');
 
 -- --------------------------------------------------------
 
@@ -125,8 +114,7 @@ CREATE TABLE `colaborador` (
 --
 
 INSERT INTO `colaborador` (`CodigoColaborador`, `NomeColaborador`, `CodigoCargo`, `email`, `senha`) VALUES
-(1, 'Amanda', 3, 'amandamesquita818@gmail.com', '$2y$10$E0loiNSDuJa9XGrwQuOdiusg3dKUGwxW14eZKlolJF1c5FHgmbfdm'),
-(2, 'Nicolas', 5, 'nicolas.hrsantos2007@gmail.com', '$2y$10$sm.3M1w6F6emwALLgXB37uQ2vtsWUxG5OeuhcUQic/oPjAXqMooRC');
+(1, 'Lavinia Adm', 4, 'lavinia@gmail.com', '$2y$10$prvRQUW4WVtTUwzhQJ/muu2sMQuR5LtRoNBLrNqOG/zHwWquQTQ42');
 
 -- --------------------------------------------------------
 
@@ -144,7 +132,7 @@ CREATE TABLE `os` (
   `ValorTotal` decimal(10,2) NOT NULL,
   `CodigoColaborador` int(11) DEFAULT NULL,
   `CodigoCliente` int(11) DEFAULT NULL,
-  `Status` enum('Em andamento','Finalizada') DEFAULT 'Em andamento'
+  `Status` varchar(50) DEFAULT 'Pendente'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -152,10 +140,10 @@ CREATE TABLE `os` (
 --
 
 INSERT INTO `os` (`OS`, `NumeroOS`, `Data`, `Equipamento`, `Defeito`, `Servico`, `ValorTotal`, `CodigoColaborador`, `CodigoCliente`, `Status`) VALUES
-(4, 'OS20250428004', '2025-04-28', 'Celular', 'Tela quebrada', '0', 0.00, 1, 123, 'Finalizada'),
-(5, 'OS20250428005', '2025-04-28', 'Celular', 'Tela quebrada', '0', 0.00, 1, 123, 'Finalizada'),
-(6, 'OS20250428006', '2025-04-08', 'Notebook', 'travou', '0', 100.00, 1, 123, 'Em andamento'),
-(7, 'OS20250428007', '2025-04-21', 'Computador', 'Tela quebrada', '0', 500.00, 2, 123, 'Em andamento');
+(5, 'OS20250428005', '2025-04-28', 'Celular', 'Tela quebrada', '0', 0.00, 1, 123, 'Pendente'),
+(6, 'OS20250428006', '2025-04-08', 'Notebook', 'travou', '0', 100.00, NULL, 123, 'Pendente'),
+(7, 'OS20250428007', '2025-04-21', 'Computador', 'Tela quebrada', '0', 500.00, NULL, 123, 'Pendente'),
+(8, 'OS20250516001', '2025-05-16', 'TV', 'Lento', '0', 400.00, NULL, 124, 'Pendente');
 
 --
 -- Índices para tabelas despejadas
@@ -204,7 +192,7 @@ ALTER TABLE `os`
 -- AUTO_INCREMENT de tabela `andamentoos`
 --
 ALTER TABLE `andamentoos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT de tabela `cargo`
@@ -222,13 +210,13 @@ ALTER TABLE `cliente`
 -- AUTO_INCREMENT de tabela `colaborador`
 --
 ALTER TABLE `colaborador`
-  MODIFY `CodigoColaborador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `CodigoColaborador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `os`
 --
 ALTER TABLE `os`
-  MODIFY `OS` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `OS` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Restrições para tabelas despejadas

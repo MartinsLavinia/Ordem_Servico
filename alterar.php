@@ -55,11 +55,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm">
-                <div class="card-header bg-warning text-dark text-center">
+                <div class="card-header bg-primary text-white text-center">
                     <h4>✏️ Editar Ordem de Serviço</h4>
                 </div>
                 <div class="card-body">
@@ -104,18 +104,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             </div>
 
                             <div class="text-end">
-                                <button type="submit" class="btn btn-primary">💾 Salvar Alterações</button>
+                                <button type="submit" class="btn btn-success">💾 Salvar Alterações</button>
                             </div>
                         </form>
-                        <div class="card-body">
-    <a href="consulta.php" class="btn btn-secondary mb-3">🔙 Voltar para Consulta</a>
-    </div>
                     <?php elseif (!$mensagem): ?>
-                        <div class="alert alert-warning">⚠️ Nenhuma Ordem de Serviço foi selecionada.</div>
+                        <div class="alert alert-warning mt-3">⚠️ Nenhuma Ordem de Serviço foi selecionada.</div>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="card-body2">
+        <a href="consulta.php" class="btn btn-secondary mb-3 float-end">
+            Ir para Consulta <i class="bi bi-arrow-right"></i>
+        </a>
     </div>
 </div>
 </body>

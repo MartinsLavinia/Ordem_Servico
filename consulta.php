@@ -1,6 +1,5 @@
 <?php
 
-
 include 'conexao.php';
 
 // Excluir OS se solicitado
@@ -19,8 +18,8 @@ if (isset($_GET['excluir']) && isset($_GET['numero_os'])) {
     excluirOS($_GET['numero_os']);
 }
 
-// Preparar consulta com filtros
-$sql = "SELECT OS.NumeroOS, OS.Data, OS.Equipamento, OS.Defeito, OS.Servico, OS.ValorTotal, CLIENTE.NomeCliente 
+// Preparar consulta com filtros, sem o campo Servico
+$sql = "SELECT OS.NumeroOS, OS.Data, OS.Equipamento, OS.Defeito, OS.ValorTotal, CLIENTE.NomeCliente 
         FROM OS
         JOIN CLIENTE ON OS.CodigoCliente = CLIENTE.CodigoCliente
         WHERE 1";
@@ -96,40 +95,35 @@ $result = $stmt->get_result();
         }
 
         button.btn-info {
-        background: transparent; /* Remove o fundo do botão */
-        border: none; /* Remove a borda do botão */
-        padding: 0; /* Remove qualquer preenchimento extra ao redor da imagem */
-        display: inline-flex; /* Ajusta o layout do botão com a imagem */
-        justify-content: center; /* Centraliza a imagem dentro do botão */
-        align-items: center; /* Alinha a imagem no centro verticalmente */
-        cursor: pointer; /* Deixa o cursor como uma mãozinha quando passar sobre o botão */
+            background: transparent;
+            border: none;
+            padding: 0;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
         }
 
         button.btn-info img.icon-btn {
-        display: block;
-        width: 40px; /* Aumenta o tamanho da imagem */
-        height: 40px; /* Aumenta o tamanho da imagem */
-        transition: transform 0.2s ease-in-out; /* Faz a animação de transformação ao passar o mouse */
+            display: block;
+            width: 40px;
+            height: 40px;
+            transition: transform 0.2s ease-in-out;
         }
 
         button.btn-info:hover img.icon-btn {
-        transform: scale(1.2); /* Aumenta o tamanho da imagem para 120% quando passar o mouse */
+            transform: scale(1.2);
         }
 
-        /* Remove o efeito de hover ciano no botão */
         button.btn-info:hover {
-        background: transparent; /* Garante que não tenha fundo no hover */
-        border: none; /* Garante que não tenha borda no hover */
+            background: transparent;
+            border: none;
         }
-
-
-
-
     </style>
 </head>
 <body>
 
-<header class=" top-0 w-100 shadow-sm" style="z-index: 1030; height: 80px;">
+<header class="top-0 w-100 shadow-sm" style="z-index: 1030; height: 80px;">
   <div class="bg-white bg-opacity-75 px-4 py-3 d-flex justify-content-between align-items-center" style="backdrop-filter: blur(10px);">
     <a href="index.php" class="text-decoration-none text-primary fs-4 fw-bold">
       🔧 Ordem de Serviço
@@ -147,18 +141,19 @@ $result = $stmt->get_result();
     <h2 class="text-center">Consulta de Ordens de Serviço</h2>
 
     <form method="GET" class="row g-3 my-4 p-4 rounded shadow-sm custom-form-box">
-    <div class="col-md-4">
-        <label for="numero_os" class="form-label fw-semibold">Número da OS</label>
-        <input type="text" id="numero_os" name="numero_os" class="form-control rounded-pill" placeholder="Digite o número da OS" value="<?= htmlspecialchars($_GET['numero_os'] ?? '') ?>">
-    </div>
-    <div class="col-md-4">
-        <label for="cliente_nome" class="form-label fw-semibold">Nome do Cliente</label>
-        <input type="text" id="cliente_nome" name="cliente_nome" class="form-control rounded-pill" placeholder="Digite o nome do cliente" value="<?= htmlspecialchars($_GET['cliente_nome'] ?? '') ?>">
-    </div>
-    <div class="col-md-4 d-flex align-items-end">
-        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold">🔍 Buscar</button>
-    </div>
-</form>
+        <div class="col-md-4">
+            <label for="numero_os" class="form-label fw-semibold">Número da OS</label>
+            <input type="text" id="numero_os" name="numero_os" class="form-control rounded-pill" placeholder="Digite o número da OS" value="<?= htmlspecialchars($_GET['numero_os'] ?? '') ?>">
+        </div>
+        <div class="col-md-4">
+            <label for="cliente_nome" class="form-label fw-semibold">Nome do Cliente</label>
+            <input type="text" id="cliente_nome" name="cliente_nome" class="form-control rounded-pill" placeholder="Digite o nome do cliente" value="<?= htmlspecialchars($_GET['cliente_nome'] ?? '') ?>">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold">🔍 Buscar</button>
+        </div>
+    </form>
+
     <?php if ($result->num_rows > 0): ?>
     <div class="table-responsive custom-table-box mt-4">
         <table class="table table-bordered table-hover align-middle rounded-3 overflow-hidden">
@@ -168,7 +163,6 @@ $result = $stmt->get_result();
                     <th>Data</th>
                     <th>Equipamento</th>
                     <th>Defeito</th>
-                    <th>Serviço</th>
                     <th>Valor Total</th>
                     <th>Cliente</th>
                     <th>Ações</th>
@@ -181,7 +175,6 @@ $result = $stmt->get_result();
                     <td><?= $row['Data'] ?></td>
                     <td><?= $row['Equipamento'] ?></td>
                     <td><?= $row['Defeito'] ?></td>
-                    <td><?= $row['Servico'] ?></td>
                     <td>R$ <?= number_format($row['ValorTotal'], 2, ',', '.') ?></td>
                     <td><?= $row['NomeCliente'] ?></td>
                     <td class="text-center">
@@ -198,8 +191,7 @@ $result = $stmt->get_result();
             </tbody>
         </table>
     </div>
-<?php else: ?>
-
+    <?php else: ?>
         <div class="alert alert-warning">❌ Nenhuma ordem de serviço encontrada com os critérios informados.</div>
     <?php endif; ?>
 </div>
@@ -208,14 +200,12 @@ $result = $stmt->get_result();
 function imprimir(numero_os) {
     window.open('imprimir_os.php?numero_os=' + numero_os, '_blank');
 }
-
-    document.getElementById('select_all').addEventListener('click', function() {
-        const checkboxes = document.querySelectorAll('input[name="os_selecionadas[]"]');
-        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
-    });
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<BR><BR><BR>
+
+<br><br><br>
+
 <footer class="text-white pt-5 pb-4" style="background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('engrenagens.jpg') center center / cover no-repeat;">
   <div class="container text-md-left">
     <div class="row text-center text-md-start">

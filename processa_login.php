@@ -2,7 +2,7 @@
 session_start();
 include("conexao.php");
 
-// Verifica se os dados foram enviados
+
 if (!isset($_POST['email']) || !isset($_POST['senha'])) {
     echo "<script>
         alert('Preencha todos os campos!');

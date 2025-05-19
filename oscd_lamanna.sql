@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 16/05/2025 às 16:28
+-- Tempo de geração: 19/05/2025 às 16:47
 -- Versão do servidor: 10.4.32-MariaDB
--- Versão do PHP: 8.0.30
+-- Versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -40,11 +40,7 @@ CREATE TABLE `andamentoos` (
 --
 
 INSERT INTO `andamentoos` (`id`, `OS`, `Situacao`, `Descricao`, `DataAtualizacao`) VALUES
-(28, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-16 12:46:15'),
-(29, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-16 12:46:23'),
-(30, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-16 12:46:23'),
-(31, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-16 12:46:23'),
-(32, 5, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-16 14:03:24');
+(1, 8, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-19 13:02:29');
 
 -- --------------------------------------------------------
 
@@ -93,7 +89,7 @@ CREATE TABLE `cliente` (
 
 INSERT INTO `cliente` (`CodigoCliente`, `NomeCliente`, `email`, `senha`) VALUES
 (123, 'amanda', '', ''),
-(124, 'Lavinia', 'lavinia@gmail.com', '$2y$10$x26RMsgZzn.6KQyIxx7LxOTRZ0lEhpEWbKFuJRrYsZLFn05jlsNJy');
+(125, 'Lavinia', 'lavinia@gmail.com', '$2y$10$hHY9yGbpjii0YvAveE5uYeh9F4ZfNSXs/vVYvyL3OYsI1FfJdYMK.');
 
 -- --------------------------------------------------------
 
@@ -114,7 +110,8 @@ CREATE TABLE `colaborador` (
 --
 
 INSERT INTO `colaborador` (`CodigoColaborador`, `NomeColaborador`, `CodigoCargo`, `email`, `senha`) VALUES
-(1, 'Lavinia Adm', 4, 'lavinia@gmail.com', '$2y$10$prvRQUW4WVtTUwzhQJ/muu2sMQuR5LtRoNBLrNqOG/zHwWquQTQ42');
+(1, 'Lavinia Martins', 7, 'lavinia@gmail.com', '$2y$10$CA/UB2N3YjCypdSziHUe6.JRvp5XRZuiBsYyurjbPk4xHdI/4zSKa'),
+(2, 'Amanda', 8, 'amanda@gmail.com', '$2y$10$jJBPINcYex/zL3zu8GLqeeCYdR3hsbJI3b0ypMN2kJMb1p04Vuj.y');
 
 -- --------------------------------------------------------
 
@@ -128,22 +125,26 @@ CREATE TABLE `os` (
   `Data` date NOT NULL,
   `Equipamento` varchar(255) NOT NULL,
   `Defeito` text NOT NULL,
-  `Servico` text NOT NULL,
+  `ValorDefeito` decimal(10,2) DEFAULT NULL,
   `ValorTotal` decimal(10,2) NOT NULL,
   `CodigoColaborador` int(11) DEFAULT NULL,
   `CodigoCliente` int(11) DEFAULT NULL,
-  `Status` varchar(50) DEFAULT 'Pendente'
+  `status` enum('ativo','inativo','pendente') DEFAULT 'ativo',
+  `Servico` varchar(50) DEFAULT NULL,
+  `ValorServico` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `os`
 --
 
-INSERT INTO `os` (`OS`, `NumeroOS`, `Data`, `Equipamento`, `Defeito`, `Servico`, `ValorTotal`, `CodigoColaborador`, `CodigoCliente`, `Status`) VALUES
-(5, 'OS20250428005', '2025-04-28', 'Celular', 'Tela quebrada', '0', 0.00, 1, 123, 'Pendente'),
-(6, 'OS20250428006', '2025-04-08', 'Notebook', 'travou', '0', 100.00, NULL, 123, 'Pendente'),
-(7, 'OS20250428007', '2025-04-21', 'Computador', 'Tela quebrada', '0', 500.00, NULL, 123, 'Pendente'),
-(8, 'OS20250516001', '2025-05-16', 'TV', 'Lento', '0', 400.00, NULL, 124, 'Pendente');
+INSERT INTO `os` (`OS`, `NumeroOS`, `Data`, `Equipamento`, `Defeito`, `ValorDefeito`, `ValorTotal`, `CodigoColaborador`, `CodigoCliente`, `status`, `Servico`, `ValorServico`) VALUES
+(5, 'OS20250428005', '2025-04-28', 'Celular', 'Tela quebrada', NULL, 0.00, NULL, 123, 'ativo', NULL, NULL),
+(6, 'OS20250428006', '2025-04-08', 'Notebook', 'travou', NULL, 100.00, NULL, 123, 'ativo', NULL, NULL),
+(8, 'OS20250519001', '2025-05-19', 'Computador', 'teste', NULL, 100.00, 2, 125, 'ativo', NULL, NULL),
+(16, 'OS20250519002', '2025-05-19', 'Computador', 'teste9', NULL, 100.00, NULL, 125, 'ativo', NULL, NULL),
+(17, 'OS20250519003', '2025-05-19', 'Computador', 'Não liga', NULL, 550.00, NULL, 125, 'ativo', NULL, NULL),
+(18, 'OS20250519004', '2025-05-19', 'Computador', 'Instalação de software', NULL, 200.00, NULL, 125, 'ativo', '0', NULL);
 
 --
 -- Índices para tabelas despejadas
@@ -192,7 +193,7 @@ ALTER TABLE `os`
 -- AUTO_INCREMENT de tabela `andamentoos`
 --
 ALTER TABLE `andamentoos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `cargo`
@@ -204,19 +205,19 @@ ALTER TABLE `cargo`
 -- AUTO_INCREMENT de tabela `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `CodigoCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+  MODIFY `CodigoCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT de tabela `colaborador`
 --
 ALTER TABLE `colaborador`
-  MODIFY `CodigoColaborador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `CodigoColaborador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `os`
 --
 ALTER TABLE `os`
-  MODIFY `OS` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `OS` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Restrições para tabelas despejadas

@@ -37,26 +37,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $situacao = $_POST['situacao'];
         $descricao = $_POST['descricao'];
 
-        // Inserir novo andamento
         $stmt = $conexao->prepare("INSERT INTO andamentoos (OS, Situacao, Descricao) VALUES (?, ?, ?)");
         $stmt->bind_param("iss", $os_id, $situacao, $descricao);
         $stmt->execute();
         $stmt->close();
 
-        // Atualizar situação atual na tabela OS
         $stmt = $conexao->prepare("UPDATE os SET SituacaoAtual = ?, DescricaoAtual = ? WHERE OS = ?");
         $stmt->bind_param("ssi", $situacao, $descricao, $os_id);
         $stmt->execute();
         $stmt->close();
     }
 
-    // Alterar valor total
+    // Alterar valor total (somente se defeito for "outros")
     if (isset($_POST['alterar_valor'])) {
         $novo_valor = (float)$_POST['valor_total'];
-        $stmt = $conexao->prepare("UPDATE os SET ValorTotal = ? WHERE OS = ?");
-        $stmt->bind_param("di", $novo_valor, $os_id);
+
+        $stmt = $conexao->prepare("SELECT Defeito FROM os WHERE OS = ? AND CodigoColaborador = ?");
+        $stmt->bind_param("ii", $os_id, $colaboradorId);
         $stmt->execute();
+        $stmt->bind_result($defeito);
+        $stmt->fetch();
         $stmt->close();
+
+        if (strtolower($defeito) === 'outros') {
+            $stmt = $conexao->prepare("UPDATE os SET ValorTotal = ? WHERE OS = ?");
+            $stmt->bind_param("di", $novo_valor, $os_id);
+            $stmt->execute();
+            $stmt->close();
+        } else {
+            echo "<div class='alert alert-danger text-center'>Erro: Alteração de valor só é permitida se o defeito for 'outros'.</div>";
+        }
     }
 }
 
@@ -115,22 +125,22 @@ $result = $stmt->get_result();
 
 <div class="container mt-5 mb-5">
     <h2 class="mb-4 text-center fw-bold" style="color: #198754;">
-    <i class="bi bi-wrench-adjustable-circle"></i> Andamento de Ordens de Serviço
-</h2>
+        <i class="bi bi-wrench-adjustable-circle"></i> Andamento de Ordens de Serviço
+    </h2>
 
-<!-- Formulário de pesquisa -->
-<form method="GET" class="mb-4 shadow-sm p-3 bg-light rounded">
-    <div class="input-group">
-        <input type="text" name="search" value="<?= htmlspecialchars($searchTerm) ?>" class="form-control" placeholder="Pesquisar por Número OS ou Nome do Cliente" required>
-        <select name="type" class="form-select">
-            <option value="numeroos" <?= $searchType == 'numeroos' ? 'selected' : '' ?>>Número da OS</option>
-            <option value="nomecliente" <?= $searchType == 'nomecliente' ? 'selected' : '' ?>>Nome do Cliente</option>
-        </select>
-        <button type="submit" class="btn text-white" style="background-color: #198754;">
-            <i class="bi bi-search"></i>
-        </button>
-    </div>
-</form>
+    <!-- Formulário de pesquisa -->
+    <form method="GET" class="mb-4 shadow-sm p-3 bg-light rounded">
+        <div class="input-group">
+            <input type="text" name="search" value="<?= htmlspecialchars($searchTerm) ?>" class="form-control" placeholder="Pesquisar por Número OS ou Nome do Cliente" required>
+            <select name="type" class="form-select">
+                <option value="numeroos" <?= $searchType == 'numeroos' ? 'selected' : '' ?>>Número da OS</option>
+                <option value="nomecliente" <?= $searchType == 'nomecliente' ? 'selected' : '' ?>>Nome do Cliente</option>
+            </select>
+            <button type="submit" class="btn text-white" style="background-color: #198754;">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
 
     <?php
     $counter = 0;
@@ -148,7 +158,7 @@ $result = $stmt->get_result();
             <p><strong>Defeito:</strong> <?= htmlspecialchars($row['Defeito']) ?></p>
             <p><strong>Serviço:</strong> <?= htmlspecialchars($row['Servico']) ?></p>
 
-            <!-- Formulário de atualização -->
+            <!-- Atualização de situação -->
             <form method="POST" class="mt-3 mb-4">
                 <input type="hidden" name="os_id" value="<?= $row['OS'] ?>">
                 <div class="mb-2">
@@ -162,18 +172,15 @@ $result = $stmt->get_result();
                 <button type="submit" class="btn btn-primary w-auto ms-0">
                     <i class="bi bi-save"></i> Salvar Atualização
                 </button>
-
             </form>
 
-            <!-- Botão Finalizar -->
+            <!-- Finalizar OS -->
             <form method="POST" class="mb-3">
                 <input type="hidden" name="os_id" value="<?= $row['OS'] ?>">
                 <button type="submit" name="finalizar" class="btn btn-success w-auto">
                     <i class="bi bi-check-circle"></i> Finalizar OS
                 </button>
             </form>
-
-
 
             <!-- Alteração de valor (se defeito for "outros") -->
             <?php if (strtolower($row['Defeito']) == 'outros'): ?>
@@ -224,9 +231,6 @@ $result = $stmt->get_result();
     <?php endif; ?>
 </div>
 
-<!-- Espaço visual extra -->
-<br><br><br>
-
 <script>
 document.getElementById("verMaisBtn")?.addEventListener("click", function () {
     document.querySelectorAll(".extra-os").forEach(el => el.classList.remove("d-none"));
@@ -234,16 +238,13 @@ document.getElementById("verMaisBtn")?.addEventListener("click", function () {
 });
 </script>
 
-
 <footer class="text-white pt-5 pb-4" style="background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('engrenagens.jpg') center center / cover no-repeat;">
   <div class="container text-md-left">
     <div class="row text-center text-md-start">
-
       <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mb-4">
         <h5 class="text-uppercase fw-bold mb-3" style="color: #198754">🔧 Ordem de Serviço</h5>
         <p>Sistema eficiente para gerenciamento de atendimentos, reparos e controle de serviços técnicos.</p>
       </div>
-
       <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
         <h6 class="text-uppercase fw-bold mb-3">Navegação</h6>
         <ul class="list-unstyled">
@@ -253,17 +254,14 @@ document.getElementById("verMaisBtn")?.addEventListener("click", function () {
           <li><a href="logout.php" class="text-white text-decoration-none">Logout</a></li>
         </ul>
       </div>
-
       <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
         <h6 class="text-uppercase fw-bold mb-3">Contato</h6>
         <p><i class="bi bi-geo-alt-fill me-2"></i> Rua Exemplo, 123 - Centro</p>
         <p><i class="bi bi-envelope-fill me-2"></i> suporte@osistema.com</p>
         <p><i class="bi bi-phone-fill me-2"></i> (11) 99999-9999</p>
       </div>
-
     </div>
   </div>
-
   <div class="text-center mt-4 border-top pt-3" style="font-size: 0.9rem;">
     &copy; <?= date('Y') ?> Ordem de Serviço. Todos os direitos reservados.
   </div>

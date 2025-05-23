@@ -170,6 +170,14 @@ $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 
+
+if (!isset($_SESSION['colaborador']) || !isset($_SESSION['colaborador']['codigo'])) {
+    header("Location: login-adm.php");
+    exit();
+}
+
+$id_colaborador = $_SESSION['colaborador']['codigo'];
+$nome_colaborador = $_SESSION['colaborador']['nome'];
 ?>
 
 <!DOCTYPE html>
@@ -179,10 +187,8 @@ $result = $stmt->get_result();
     <title>Andamento de Serviço</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
-    <style>
-        .link-hover-green:hover { color: #14532d !important; }
-        .link-hover-red:hover { color: #b91c1c !important; }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="style-adm.css" rel="stylesheet">
 </head>
 <body>
 
@@ -194,7 +200,18 @@ $result = $stmt->get_result();
     <nav class="d-flex align-items-center">
       <a href="aceitar_servicos.php" class="nav-link mx-3 fw-semibold link-hover-green" style="color: #2B7540;">Serviços</a>
       <a href="andamento.php" class="nav-link mx-3 fw-semibold link-hover-green" style="color: #2B7540;">Andamento</a>
-      <a href="logout.php" class="nav-link text-danger mx-3 fw-semibold link-hover-red">Logout</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-circle me-2"></i><?= htmlspecialchars($nome_colaborador) ?>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+            <a class="dropdown-item text-danger" href="logout.php">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+            </li>
+        </ul>
+        </div>
     </nav>
   </div>
 </header>
@@ -343,6 +360,40 @@ $result = $stmt->get_result();
         document.getElementById('btnMostrarMais').style.display = 'none';
     });
 </script>
+
+<footer class="text-white pt-5 pb-4" style="background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('engrenagens.jpg') center center / cover no-repeat;">
+  <div class="container text-md-left">
+    <div class="row text-center text-md-start">
+
+      <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mb-4">
+        <h5 class="text-uppercase fw-bold mb-3" style="color: #198754">🔧 Ordem de Serviço</h5>
+        <p>Sistema eficiente para gerenciamento de atendimentos, reparos e controle de serviços técnicos.</p>
+      </div>
+
+      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">Navegação</h6>
+        <ul class="list-unstyled">
+          <li><a href="criaros.php" class="text-white text-decoration-none">Cadastrar OS</a></li>
+          <li><a href="consulta.php" class="text-white text-decoration-none">Consultar OS</a></li>
+          <li><a href="atualizacoes.php" class="text-white text-decoration-none">Atualizações</a></li>
+          <li><a href="logout.php" class="text-white text-decoration-none">Logout</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">Contato</h6>
+        <p><i class="bi bi-geo-alt-fill me-2"></i> Rua Exemplo, 123 - Centro</p>
+        <p><i class="bi bi-envelope-fill me-2"></i> suporte@osistema.com</p>
+        <p><i class="bi bi-phone-fill me-2"></i> (11) 99999-9999</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="text-center mt-4 border-top pt-3" style="font-size: 0.9rem;">
+    &copy; <?= date('Y') ?> Ordem de Serviço. Todos os direitos reservados.
+  </div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

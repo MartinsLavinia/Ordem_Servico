@@ -45,6 +45,23 @@ $sql = "SELECT os.OS, os.NumeroOS, os.Equipamento, os.Defeito, os.Servico, os.Va
         ORDER BY os.OS DESC";
 
 $result = $conexao->query($sql);
+
+// Verifica se o usuário está logado
+if (!isset($_SESSION['CodigoCliente'])) {
+    header("Location: login-usuario.php");
+    exit();
+}
+
+// Pega o ID do cliente da sessão
+$id_cliente = $_SESSION['CodigoCliente'];
+
+// Consulta o nome do cliente no banco
+$stmt = $conexao->prepare("SELECT NomeCliente FROM cliente WHERE CodigoCliente = ?");
+$stmt->bind_param("i", $id_cliente);
+$stmt->execute();
+$stmt->bind_result($nome_cliente);
+$stmt->fetch();
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -54,6 +71,30 @@ $result = $conexao->query($sql);
     <title>Histórico de Atualizações - Ordens de Serviço</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+      .link-hover-blue::after,
+      .link-hover-red::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        height: 2px;
+        width: 0;
+        transition: width 0.3s ease;
+      }
+      .link-hover-blue:hover::after {
+        width: 100%;
+        background-color: #0d6efd;
+      }
+      .link-hover-red:hover::after {
+        width: 100%;
+        background-color: red;
+      }
+      nav a {
+        position: relative;
+      }
+    </style>
 </head>
 <body>
 
@@ -66,7 +107,18 @@ $result = $conexao->query($sql);
       <a href="criaros.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Cadastrar OS</a>
       <a href="consulta.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Consultar OS</a>
       <a href="atualizacoes.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Atualizações</a>
-      <a href="logout.php" class="nav-link text-danger mx-3 fw-semibold link-hover-red">Logout</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-circle me-2"></i><?= htmlspecialchars($nome_cliente) ?>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+            <a class="dropdown-item text-danger" href="logout.php">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+            </li>
+        </ul>
+      </div>
     </nav>
   </div>
 </header>
@@ -160,6 +212,8 @@ $result = $conexao->query($sql);
     &copy; <?= date('Y') ?> Ordem de Serviço. Todos os direitos reservados.
   </div>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

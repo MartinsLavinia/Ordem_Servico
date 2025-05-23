@@ -2,7 +2,7 @@
 session_start();
 include 'conexao.php';
 
-// Verifica se está logado pelo CódigoCliente (nome da sessão do login)
+// Verifica se está logado
 if (!isset($_SESSION['CodigoCliente'])) {
     echo "<div class='alert alert-danger text-center'>Você precisa estar logado para acessar esta página.</div>";
     exit;
@@ -30,7 +30,7 @@ if (isset($_GET['excluir']) && isset($_GET['numero_os'])) {
     excluirOS($_GET['numero_os'], $codigoClienteLogado);
 }
 
-// Preparar consulta com filtro pelo usuário logado
+// Consulta OSs com filtros e restrição por cliente
 $sql = "SELECT OS.NumeroOS, OS.Data, OS.Equipamento, OS.Defeito, OS.Servico, OS.ValorTotal, CLIENTE.NomeCliente 
         FROM OS
         JOIN CLIENTE ON OS.CodigoCliente = CLIENTE.CodigoCliente
@@ -59,6 +59,14 @@ $stmt = $conexao->prepare($sql);
 $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
+
+// Consulta o nome do cliente logado
+$stmt = $conexao->prepare("SELECT NomeCliente FROM cliente WHERE CodigoCliente = ?");
+$stmt->bind_param("i", $codigoClienteLogado);
+$stmt->execute();
+$stmt->bind_result($nome_cliente);
+$stmt->fetch();
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -67,7 +75,8 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <title>Consulta de Ordens de Serviço</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
     <style>
         /* Seu CSS existente... */
         .card-body {
@@ -138,6 +147,28 @@ $result = $stmt->get_result();
             background: transparent;
             border: none;
         }
+
+        .link-hover-blue::after,
+        .link-hover-red::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        height: 2px;
+        width: 0;
+        transition: width 0.3s ease;
+        }
+        .link-hover-blue:hover::after {
+        width: 100%;
+        background-color: #0d6efd;
+        }
+        .link-hover-red:hover::after {
+        width: 100%;
+        background-color: red;
+        }
+        nav a {
+        position: relative;
+        }
     </style>
 </head>
 <body>
@@ -151,7 +182,18 @@ $result = $stmt->get_result();
       <a href="criaros.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Cadastrar OS</a>
       <a href="consulta.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Consultar OS</a>
       <a href="atualizacoes.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Atualizações</a>
-      <a href="logout.php" class="nav-link text-danger mx-3 fw-semibold link-hover-red">Logout</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-circle me-2"></i><?= htmlspecialchars($nome_cliente) ?>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+            <a class="dropdown-item text-danger" href="logout.php">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+            </li>
+        </ul>
+        </div>
     </nav>
   </div>
 </header>
@@ -227,8 +269,6 @@ function imprimir(numero_os) {
 }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <br><br><br>
 
 <footer class="text-white pt-5 pb-4" style="background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('engrenagens.jpg') center center / cover no-repeat;">
@@ -260,6 +300,8 @@ function imprimir(numero_os) {
     </div>
   </div>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

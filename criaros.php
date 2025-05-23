@@ -1,7 +1,6 @@
 <?php
 session_start();
 include 'conexao.php';
-
 class ServiceOrder {
     private $conexao;
 
@@ -60,7 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_SESSION['CodigoCliente'])) {
         $mensagem = "❌ Erro: usuário não está logado.";
     } else {
-        // Corrigido aqui:
         $_POST['client_id'] = $_SESSION['CodigoCliente'];
 
         $serviceOrder = new ServiceOrder($conexao);
@@ -73,6 +71,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 }
+
+// Verifica se o usuário está logado
+if (!isset($_SESSION['CodigoCliente'])) {
+    header("Location: login-usuario.php");
+    exit();
+}
+
+// Pega o ID do cliente da sessão
+$id_cliente = $_SESSION['CodigoCliente'];
+
+// Consulta o nome do cliente no banco
+$stmt = $conexao->prepare("SELECT NomeCliente FROM cliente WHERE CodigoCliente = ?");
+$stmt->bind_param("i", $id_cliente);
+$stmt->execute();
+$stmt->bind_result($nome_cliente);
+$stmt->fetch();
+$stmt->close();
+
 ?>
 
 
@@ -83,6 +99,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Cadastro de Ordem de Serviço</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 
     <style>
     body {
@@ -224,17 +242,28 @@ nav a {
       <a href="criaros.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Cadastrar OS</a>
       <a href="consulta.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Consultar OS</a>
       <a href="atualizacoes.php" class="nav-link text-primary mx-3 fw-semibold link-hover-blue">Atualizações</a>
-      <a href="logout.php" class="nav-link text-danger mx-3 fw-semibold link-hover-red">Logout</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-circle me-2"></i><?= htmlspecialchars($nome_cliente) ?>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+            <a class="dropdown-item text-danger" href="logout.php">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+            </li>
+        </ul>
+        </div>
     </nav>
   </div>
 </header>
 
 <!-- Conteúdo da página com espaçamento para o cabeçalho fixo -->
 <div class="content" style="padding-top: 40px;">
-  <div class="container mt-4">
-    <h2>Bem-vindo ao Sistema de Ordem de Serviço</h2>
-    <p>Aqui você pode cadastrar, consultar e gerenciar ordens de serviço.</p>
-  </div>
+  <div class="text-center mb-4">
+      <h2>Bem-vindo, <?= htmlspecialchars($nome_cliente) ?>!</h2>
+      <p>Use o sistema para cadastrar, acompanhar e gerenciar suas ordens de serviço com facilidade.</p>
+    </div>
 </div>
 
 

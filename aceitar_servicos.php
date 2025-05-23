@@ -1,3 +1,23 @@
+<?php
+session_start();
+include("conexao.php");
+
+// Verifica login e busca nome do usuário antes do HTML
+if (!isset($_SESSION['colaborador']) || !isset($_SESSION['colaborador']['codigo'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$codigoColaborador = $_SESSION['colaborador']['codigo'];
+
+$stmt = $conexao->prepare("SELECT NomeColaborador FROM colaborador WHERE CodigoColaborador = ?");
+$stmt->bind_param("i", $codigoColaborador);
+$stmt->execute();
+$stmt->bind_result($nome_colaborador);
+$stmt->fetch();
+$stmt->close();
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,6 +25,7 @@
     <title>Serviços Pendentes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="style-adm.css" rel="stylesheet">
     <style>
         .card-body {
@@ -61,16 +82,24 @@
     <nav class="d-flex align-items-center">
       <a href="aceitar_servicos.php" class="nav-link mx-3 fw-semibold link-hover-green" style="color: #2B7540;">Serviços</a>
       <a href="andamento.php" class="nav-link mx-3 fw-semibold link-hover-green" style="color: #2B7540;">Andamento</a>
-      <a href="logout.php" class="nav-link text-danger mx-3 fw-semibold link-hover-red">Logout</a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-circle me-2"></i><?= htmlspecialchars($nome_colaborador) ?>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+            <a class="dropdown-item text-danger" href="logout.php">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+            </li>
+        </ul>
+        </div>
     </nav>
   </div>
 </header>
 
 
 <?php
-session_start();
-include("conexao.php");
-
 // Verifica se o colaborador está logado
 if (!isset($_SESSION['colaborador']) || !isset($_SESSION['colaborador']['codigo'])) {
     echo "<div class='alert alert-danger text-center'>Erro: Colaborador não autenticado.</div>";
@@ -219,5 +248,6 @@ $result = $conexao->query($sql);
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

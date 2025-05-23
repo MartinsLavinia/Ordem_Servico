@@ -2,17 +2,29 @@
 session_start();
 include("conexao.php");
 
-// Verifica se o colaborador está logado
+// Verifica se colaborador está logado - se não, redireciona para login
 if (!isset($_SESSION['colaborador']) || !isset($_SESSION['colaborador']['codigo'])) {
-    echo "<div class='alert alert-danger text-center'>Erro: Colaborador não autenticado.</div>";
+    header("Location: login.php");
     exit;
 }
 
 $colaboradorId = $_SESSION['colaborador']['codigo'];
 
+// Tabela fixa de valores dos serviços
+$servicosValores = [
+    'Limpeza' => 50.00,
+    'Reparo' => 100.00,
+    'Troca de peça' => 150.00,
+    'Outros' => null // valor editável
+];
+
+// Variáveis para feedback de mensagens
+$msgSucesso = "";
+$msgErro = "";
+
 // Variáveis de pesquisa
 $searchTerm = '';
-$searchType = '';
+$searchType = 'numeroos';
 
 // Se a pesquisa foi feita
 if (isset($_GET['search']) && isset($_GET['type'])) {
@@ -20,57 +32,116 @@ if (isset($_GET['search']) && isset($_GET['type'])) {
     $searchType = $_GET['type'];
 }
 
-// Lógica de POST: atualizar andamento ou finalizar OS
+// Processar POST para atualizar andamento, finalizar ou alterar serviço e valor
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $os_id = (int)$_POST['os_id'];
+    $os_id = isset($_POST['os_id']) ? (int)$_POST['os_id'] : 0;
 
-    // Finalizar OS
-    if (isset($_POST['finalizar'])) {
-        $stmt = $conexao->prepare("UPDATE os SET Status = 'Finalizada' WHERE OS = ? AND CodigoColaborador = ?");
-        $stmt->bind_param("ii", $os_id, $colaboradorId);
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    // Atualizar andamento
-    if (isset($_POST['situacao']) && isset($_POST['descricao'])) {
-        $situacao = $_POST['situacao'];
-        $descricao = $_POST['descricao'];
-
-        $stmt = $conexao->prepare("INSERT INTO andamentoos (OS, Situacao, Descricao) VALUES (?, ?, ?)");
-        $stmt->bind_param("iss", $os_id, $situacao, $descricao);
-        $stmt->execute();
-        $stmt->close();
-
-        $stmt = $conexao->prepare("UPDATE os SET SituacaoAtual = ?, DescricaoAtual = ? WHERE OS = ?");
-        $stmt->bind_param("ssi", $situacao, $descricao, $os_id);
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    // Alterar valor total (somente se defeito for "outros")
-    if (isset($_POST['alterar_valor'])) {
-        $novo_valor = (float)$_POST['valor_total'];
-
-        $stmt = $conexao->prepare("SELECT Defeito FROM os WHERE OS = ? AND CodigoColaborador = ?");
-        $stmt->bind_param("ii", $os_id, $colaboradorId);
-        $stmt->execute();
-        $stmt->bind_result($defeito);
-        $stmt->fetch();
-        $stmt->close();
-
-        if (strtolower($defeito) === 'outros') {
-            $stmt = $conexao->prepare("UPDATE os SET ValorTotal = ? WHERE OS = ?");
-            $stmt->bind_param("di", $novo_valor, $os_id);
-            $stmt->execute();
+    if ($os_id <= 0) {
+        $msgErro = "OS inválida.";
+    } else {
+        // Finalizar OS
+        if (isset($_POST['finalizar'])) {
+            $stmt = $conexao->prepare("UPDATE os SET Status = 'Finalizada' WHERE OS = ? AND CodigoColaborador = ?");
+            $stmt->bind_param("ii", $os_id, $colaboradorId);
+            if ($stmt->execute()) {
+                $msgSucesso = "OS finalizada com sucesso.";
+            } else {
+                $msgErro = "Erro ao finalizar OS.";
+            }
             $stmt->close();
-        } else {
-            echo "<div class='alert alert-danger text-center'>Erro: Alteração de valor só é permitida se o defeito for 'outros'.</div>";
+        }
+
+        // Atualizar andamento
+        if (isset($_POST['situacao']) && isset($_POST['descricao'])) {
+            $situacao = trim($_POST['situacao']);
+            $descricao = trim($_POST['descricao']);
+
+            if ($situacao === '' || $descricao === '') {
+                $msgErro = "Preencha situação e descrição para atualizar o andamento.";
+            } else {
+                // Inserir andamento
+                $stmt = $conexao->prepare("INSERT INTO andamentoos (OS, Situacao, Descricao, DataAtualizacao) VALUES (?, ?, ?, NOW())");
+                $stmt->bind_param("iss", $os_id, $situacao, $descricao);
+                if ($stmt->execute()) {
+                    // Atualizar situação atual da OS
+                    $stmt2 = $conexao->prepare("UPDATE os SET SituacaoAtual = ?, DescricaoAtual = ? WHERE OS = ?");
+                    $stmt2->bind_param("ssi", $situacao, $descricao, $os_id);
+                    $stmt2->execute();
+                    $stmt2->close();
+
+                    $msgSucesso = "Andamento atualizado com sucesso.";
+                } else {
+                    $msgErro = "Erro ao atualizar andamento.";
+                }
+                $stmt->close();
+            }
+        }
+
+        // Alterar serviço e valor total
+        if (isset($_POST['alterar_servico']) && isset($_POST['servico'])) {
+            $novo_servico = trim($_POST['servico']);
+            $novo_valor = null;
+
+            // Se serviço for 'Outros', permite informar valor manualmente
+            if (strtolower($novo_servico) == 'outros') {
+                if (isset($_POST['valor_total'])) {
+                    $novo_valor = (float)$_POST['valor_total'];
+                    if ($novo_valor < 0) {
+                        $msgErro = "Valor inválido para serviço 'Outros'.";
+                    }
+                } else {
+                    $msgErro = "Informe o valor para serviço 'Outros'.";
+                }
+            } else {
+                // Busca valor fixo na tabela
+                if (isset($servicosValores[$novo_servico])) {
+                    $novo_valor = $servicosValores[$novo_servico];
+                } else {
+                    $msgErro = "Serviço inválido selecionado.";
+                }
+            }
+
+            if ($msgErro == "") {
+                // Atualiza serviço e valor na OS, apenas se colaborador dono da OS
+                $stmt = $conexao->prepare("UPDATE os SET Servico = ?, ValorTotal = ? WHERE OS = ? AND CodigoColaborador = ?");
+                $stmt->bind_param("sdii", $novo_servico, $novo_valor, $os_id, $colaboradorId);
+                if ($stmt->execute()) {
+                    $msgSucesso = "Serviço e valor atualizados com sucesso.";
+                } else {
+                    $msgErro = "Erro ao atualizar serviço e valor.";
+                }
+                $stmt->close();
+            }
+        }
+
+        // Alterar valor total (se defeito for "outros" e não alterou serviço)
+        if (isset($_POST['alterar_valor']) && isset($_POST['valor_total'])) {
+            $novo_valor = (float)$_POST['valor_total'];
+
+            $stmt = $conexao->prepare("SELECT Defeito FROM os WHERE OS = ? AND CodigoColaborador = ?");
+            $stmt->bind_param("ii", $os_id, $colaboradorId);
+            $stmt->execute();
+            $stmt->bind_result($defeito);
+            $stmt->fetch();
+            $stmt->close();
+
+            if (strtolower(trim($defeito)) === 'outros') {
+                $stmt = $conexao->prepare("UPDATE os SET ValorTotal = ? WHERE OS = ?");
+                $stmt->bind_param("di", $novo_valor, $os_id);
+                if ($stmt->execute()) {
+                    $msgSucesso = "Valor total alterado com sucesso.";
+                } else {
+                    $msgErro = "Erro ao alterar valor total.";
+                }
+                $stmt->close();
+            } else {
+                $msgErro = "Alteração de valor só permitida se o defeito for 'outros'.";
+            }
         }
     }
 }
 
-// Consulta principal: OS não finalizadas
+// Construção da consulta principal
 $sql = "SELECT os.OS, os.NumeroOS, os.Data, os.Equipamento, os.Defeito, os.Servico, os.ValorTotal, cliente.NomeCliente
         FROM os
         INNER JOIN cliente ON os.CodigoCliente = cliente.CodigoCliente
@@ -98,15 +169,20 @@ if (!$stmt) {
 $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
+
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Andamento de Serviço</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        .link-hover-green:hover { color: #14532d !important; }
+        .link-hover-red:hover { color: #b91c1c !important; }
+    </style>
 </head>
 <body>
 
@@ -124,14 +200,23 @@ $result = $stmt->get_result();
 </header>
 
 <div class="container mt-5 mb-5">
+
     <h2 class="mb-4 text-center fw-bold" style="color: #198754;">
         <i class="bi bi-wrench-adjustable-circle"></i> Andamento de Ordens de Serviço
     </h2>
 
+    <!-- Feedback das ações -->
+    <?php if ($msgSucesso): ?>
+        <div class="alert alert-success text-center"><?= htmlspecialchars($msgSucesso) ?></div>
+    <?php endif; ?>
+    <?php if ($msgErro): ?>
+        <div class="alert alert-danger text-center"><?= htmlspecialchars($msgErro) ?></div>
+    <?php endif; ?>
+
     <!-- Formulário de pesquisa -->
     <form method="GET" class="mb-4 shadow-sm p-3 bg-light rounded">
         <div class="input-group">
-            <input type="text" name="search" value="<?= htmlspecialchars($searchTerm) ?>" class="form-control" placeholder="Pesquisar por Número OS ou Nome do Cliente" required>
+            <input type="text" name="search" value="<?= htmlspecialchars($searchTerm) ?>" class="form-control" placeholder="Pesquisar por Número OS ou Nome do Cliente" required />
             <select name="type" class="form-select">
                 <option value="numeroos" <?= $searchType == 'numeroos' ? 'selected' : '' ?>>Número da OS</option>
                 <option value="nomecliente" <?= $searchType == 'nomecliente' ? 'selected' : '' ?>>Nome do Cliente</option>
@@ -142,13 +227,37 @@ $result = $stmt->get_result();
         </div>
     </form>
 
+    <!-- Tabela de valores fixos dos serviços -->
+    <div class="mb-4 p-3 bg-light rounded shadow-sm">
+        <h5 class="fw-bold text-success mb-3">Tabela de Valores dos Serviços</h5>
+        <table class="table table-bordered table-striped" style="max-width: 500px;">
+            <thead class="table-success">
+                <tr>
+                    <th>Serviço</th>
+                    <th>Valor (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($servicosValores as $servico => $valor): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($servico) ?></td>
+                        <td>
+                            <?= $valor === null ? '-' : number_format($valor, 2, ',', '.') ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <small class="text-muted">* Para o serviço <strong>Outros</strong>, o valor é editável manualmente.</small>
+    </div>
+
     <?php
     $counter = 0;
     while ($row = $result->fetch_assoc()):
         $counter++;
         $hiddenClass = $counter > 2 ? 'd-none extra-os' : '';
     ?>
-    <div class="card shadow mb-4 <?= $hiddenClass ?>" id="os_<?= $row['OS'] ?>">
+    <div class="card shadow mb-4 <?= $hiddenClass ?>" id="os_<?= htmlspecialchars($row['OS']) ?>">
         <div class="card-header bg-dark text-white d-flex justify-content-between rounded-top">
             <span><strong>OS Nº:</strong> <?= htmlspecialchars($row['NumeroOS']) ?></span>
             <span><strong>Cliente:</strong> <?= htmlspecialchars($row['NomeCliente']) ?></span>
@@ -156,116 +265,90 @@ $result = $stmt->get_result();
         <div class="card-body bg-white">
             <p><strong>Equipamento:</strong> <?= htmlspecialchars($row['Equipamento']) ?></p>
             <p><strong>Defeito:</strong> <?= htmlspecialchars($row['Defeito']) ?></p>
-            <p><strong>Serviço:</strong> <?= htmlspecialchars($row['Servico']) ?></p>
+            <p><strong>Serviço Atual:</strong> <?= htmlspecialchars($row['Servico']) ?></p>
+            <p><strong>Valor Total Atual:</strong> R$ <?= number_format($row['ValorTotal'], 2, ',', '.') ?></p>
 
-            <!-- Atualização de situação -->
-            <form method="POST" class="mt-3 mb-4">
-                <input type="hidden" name="os_id" value="<?= $row['OS'] ?>">
-                <div class="mb-2">
-                    <label class="form-label fw-semibold">Situação</label>
-                    <input type="text" name="situacao" class="form-control" placeholder="Ex: Aguardando peça" required>
+            <!-- Formulário para alterar serviço e valor -->
+            <form method="POST" class="mb-4" novalidate>
+                <input type="hidden" name="os_id" value="<?= htmlspecialchars($row['OS']) ?>">
+
+                <div class="mb-3">
+                    <label for="servico_<?= $row['OS'] ?>" class="form-label fw-semibold">Alterar Serviço</label>
+                    <select name="servico" id="servico_<?= $row['OS'] ?>" class="form-select" onchange="toggleValorInput(<?= $row['OS'] ?>)">
+                        <?php foreach ($servicosValores as $servico => $valor): ?>
+                            <option value="<?= htmlspecialchars($servico) ?>" <?= strtolower($servico) == strtolower($row['Servico']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($servico) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-                <div class="mb-2">
-                    <label class="form-label fw-semibold">Descrição da Atualização</label>
-                    <textarea name="descricao" rows="3" class="form-control" placeholder="Descreva a ação realizada..." required></textarea>
+
+                <div class="mb-3" id="valorDiv_<?= $row['OS'] ?>" style="display: <?= strtolower(trim($row['Servico'])) == 'outros' ? 'block' : 'none' ?>;">
+                    <label for="valor_total_<?= $row['OS'] ?>" class="form-label fw-semibold">Valor Total (R$)</label>
+                    <input type="number" step="0.01" min="0" name="valor_total" id="valor_total_<?= $row['OS'] ?>" class="form-control" value="<?= number_format($row['ValorTotal'], 2, '.', '') ?>" />
                 </div>
-                <button type="submit" class="btn btn-primary w-auto ms-0">
-                    <i class="bi bi-save"></i> Salvar Atualização
-                </button>
+
+                <button type="submit" name="alterar_servico" class="btn btn-success">Salvar Alterações</button>
             </form>
 
-            <!-- Finalizar OS -->
-            <form method="POST" class="mb-3">
-                <input type="hidden" name="os_id" value="<?= $row['OS'] ?>">
-                <button type="submit" name="finalizar" class="btn btn-success w-auto">
-                    <i class="bi bi-check-circle"></i> Finalizar OS
-                </button>
+            <!-- Formulário para atualizar andamento -->
+            <form method="POST" novalidate>
+                <input type="hidden" name="os_id" value="<?= htmlspecialchars($row['OS']) ?>">
+                <div class="mb-3">
+                    <label for="situacao_<?= $row['OS'] ?>" class="form-label fw-semibold">Situação Atual</label>
+                    <input type="text" name="situacao" id="situacao_<?= $row['OS'] ?>" class="form-control" placeholder="Situação atual do serviço" required />
+                </div>
+                <div class="mb-3">
+                    <label for="descricao_<?= $row['OS'] ?>" class="form-label fw-semibold">Descrição</label>
+                    <textarea name="descricao" id="descricao_<?= $row['OS'] ?>" class="form-control" rows="2" placeholder="Descrição do andamento" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" name="andamento">Atualizar Andamento</button>
             </form>
 
-            <!-- Alteração de valor (se defeito for "outros") -->
-            <?php if (strtolower($row['Defeito']) == 'outros'): ?>
-                <form method="POST" class="mb-3">
-                    <input type="hidden" name="os_id" value="<?= $row['OS'] ?>">
-                    <div class="mb-2">
-                        <label class="form-label fw-semibold">Alterar Valor Total</label>
-                        <input type="number" name="valor_total" class="form-control" value="<?= htmlspecialchars($row['ValorTotal']) ?>" step="0.01" required>
-                    </div>
-                    <button type="submit" name="alterar_valor" class="btn btn-warning w-100">
-                        <i class="bi bi-pencil"></i> Alterar Valor
-                    </button>
-                </form>
-            <?php endif; ?>
-
-            <!-- Histórico -->
-            <?php
-            $hist = $conexao->prepare("SELECT Situacao, Descricao, DataAtualizacao FROM andamentoos WHERE OS = ? ORDER BY DataAtualizacao DESC");
-            $hist->bind_param("i", $row['OS']);
-            $hist->execute();
-            $andamentos = $hist->get_result();
-            ?>
-
-            <h6 class="mt-4 fw-bold text-secondary">Histórico de Atualizações:</h6>
-            <?php if ($andamentos->num_rows > 0): ?>
-                <ul class="list-group shadow-sm">
-                    <?php while ($and = $andamentos->fetch_assoc()): ?>
-                        <li class="list-group-item">
-                            <strong><?= date('d/m/Y H:i', strtotime($and['DataAtualizacao'])) ?></strong><br>
-                            <strong>Situação:</strong> <?= htmlspecialchars($and['Situacao']) ?><br>
-                            <strong>Descrição:</strong> <?= nl2br(htmlspecialchars($and['Descricao'])) ?>
-                        </li>
-                    <?php endwhile; ?>
-                </ul>
-            <?php else: ?>
-                <p class="text-muted">Nenhuma atualização registrada.</p>
-            <?php endif; ?>
+            <!-- Botão para finalizar OS -->
+            <form method="POST" class="mt-3" onsubmit="return confirm('Tem certeza que deseja finalizar esta OS?');">
+                <input type="hidden" name="os_id" value="<?= htmlspecialchars($row['OS']) ?>">
+                <button type="submit" class="btn btn-danger" name="finalizar">Finalizar OS</button>
+            </form>
         </div>
     </div>
     <?php endwhile; ?>
 
     <?php if ($counter > 2): ?>
-        <div class="text-center mb-4">
-            <button id="verMaisBtn" class="btn btn-outline-primary shadow-sm">
-                <i class="bi bi-plus-circle"></i> Ver mais ordens
-            </button>
-        </div>
+    <div class="text-center mb-4">
+        <button id="btnMostrarMais" class="btn btn-outline-success">Mostrar Mais</button>
+    </div>
     <?php endif; ?>
+
 </div>
 
 <script>
-document.getElementById("verMaisBtn")?.addEventListener("click", function () {
-    document.querySelectorAll(".extra-os").forEach(el => el.classList.remove("d-none"));
-    this.style.display = "none";
-});
+    // Função para mostrar/esconder input de valor se for serviço 'Outros'
+    function toggleValorInput(osId) {
+        const select = document.getElementById('servico_' + osId);
+        const valorDiv = document.getElementById('valorDiv_' + osId);
+
+        if (select.value.toLowerCase() === 'outros') {
+            valorDiv.style.display = 'block';
+        } else {
+            valorDiv.style.display = 'none';
+        }
+    }
+
+    // Botão mostrar mais
+    document.getElementById('btnMostrarMais')?.addEventListener('click', () => {
+        document.querySelectorAll('.extra-os').forEach(el => {
+            el.classList.remove('d-none');
+        });
+        document.getElementById('btnMostrarMais').style.display = 'none';
+    });
 </script>
 
-<footer class="text-white pt-5 pb-4" style="background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('engrenagens.jpg') center center / cover no-repeat;">
-  <div class="container text-md-left">
-    <div class="row text-center text-md-start">
-      <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mb-4">
-        <h5 class="text-uppercase fw-bold mb-3" style="color: #198754">🔧 Ordem de Serviço</h5>
-        <p>Sistema eficiente para gerenciamento de atendimentos, reparos e controle de serviços técnicos.</p>
-      </div>
-      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-        <h6 class="text-uppercase fw-bold mb-3">Navegação</h6>
-        <ul class="list-unstyled">
-          <li><a href="criaros.php" class="text-white text-decoration-none">Cadastrar OS</a></li>
-          <li><a href="consulta.php" class="text-white text-decoration-none">Consultar OS</a></li>
-          <li><a href="atualizacoes.php" class="text-white text-decoration-none">Atualizações</a></li>
-          <li><a href="logout.php" class="text-white text-decoration-none">Logout</a></li>
-        </ul>
-      </div>
-      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
-        <h6 class="text-uppercase fw-bold mb-3">Contato</h6>
-        <p><i class="bi bi-geo-alt-fill me-2"></i> Rua Exemplo, 123 - Centro</p>
-        <p><i class="bi bi-envelope-fill me-2"></i> suporte@osistema.com</p>
-        <p><i class="bi bi-phone-fill me-2"></i> (11) 99999-9999</p>
-      </div>
-    </div>
-  </div>
-  <div class="text-center mt-4 border-top pt-3" style="font-size: 0.9rem;">
-    &copy; <?= date('Y') ?> Ordem de Serviço. Todos os direitos reservados.
-  </div>
-</footer>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+<?php
+$stmt->close();
+$conexao->close();
+?>

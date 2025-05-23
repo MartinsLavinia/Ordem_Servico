@@ -1,44 +1,62 @@
 <?php
-
+session_start();
 include 'conexao.php';
 
-// Excluir OS se solicitado
-function excluirOS($numero_os) {
+// Verifica se está logado pelo CódigoCliente (nome da sessão do login)
+if (!isset($_SESSION['CodigoCliente'])) {
+    echo "<div class='alert alert-danger text-center'>Você precisa estar logado para acessar esta página.</div>";
+    exit;
+}
+
+$codigoClienteLogado = $_SESSION['CodigoCliente'];
+
+// Função para excluir OS garantindo que pertence ao usuário logado
+function excluirOS($numero_os, $codigoCliente) {
     global $conexao;
-    $stmt = $conexao->prepare("DELETE FROM OS WHERE NumeroOS = ?");
-    $stmt->bind_param("s", $numero_os);
+    $stmt = $conexao->prepare("DELETE FROM OS WHERE NumeroOS = ? AND CodigoCliente = ?");
+    $stmt->bind_param("si", $numero_os, $codigoCliente);
     if ($stmt->execute()) {
-        echo "<div class='alert alert-success'>✅ Ordem de serviço excluída com sucesso!</div>";
+        if ($stmt->affected_rows > 0) {
+            echo "<div class='alert alert-success'>✅ Ordem de serviço excluída com sucesso!</div>";
+        } else {
+            echo "<div class='alert alert-danger'>❌ Ordem de serviço não encontrada ou você não tem permissão para excluir.</div>";
+        }
     } else {
         echo "<div class='alert alert-danger'>❌ Erro ao excluir a ordem de serviço.</div>";
     }
 }
 
 if (isset($_GET['excluir']) && isset($_GET['numero_os'])) {
-    excluirOS($_GET['numero_os']);
+    excluirOS($_GET['numero_os'], $codigoClienteLogado);
 }
 
-// Preparar consulta com filtros, sem o campo Servico
-$sql = "SELECT OS.NumeroOS, OS.Data, OS.Equipamento, OS.Defeito, OS.ValorTotal, CLIENTE.NomeCliente 
+// Preparar consulta com filtro pelo usuário logado
+$sql = "SELECT OS.NumeroOS, OS.Data, OS.Equipamento, OS.Defeito, OS.Servico, OS.ValorTotal, CLIENTE.NomeCliente 
         FROM OS
         JOIN CLIENTE ON OS.CodigoCliente = CLIENTE.CodigoCliente
-        WHERE 1";
+        WHERE OS.CodigoCliente = ?";
 
-$params = [];
+$params = [$codigoClienteLogado];
+$types = "i";
+
 if (!empty($_GET['numero_os'])) {
     $sql .= " AND OS.NumeroOS LIKE ?";
     $params[] = "%" . $_GET['numero_os'] . "%";
+    $types .= "s";
 }
 if (!empty($_GET['cliente_nome'])) {
     $sql .= " AND CLIENTE.NomeCliente LIKE ?";
     $params[] = "%" . $_GET['cliente_nome'] . "%";
+    $types .= "s";
+}
+if (!empty($_GET['servico'])) {
+    $sql .= " AND OS.Servico LIKE ?";
+    $params[] = "%" . $_GET['servico'] . "%";
+    $types .= "s";
 }
 
 $stmt = $conexao->prepare($sql);
-if (!empty($params)) {
-    $types = str_repeat('s', count($params));
-    $stmt->bind_param($types, ...$params);
-}
+$stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -51,6 +69,7 @@ $result = $stmt->get_result();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <style>
+        /* Seu CSS existente... */
         .card-body {
             margin-bottom: 35px;
         }
@@ -141,15 +160,19 @@ $result = $stmt->get_result();
     <h2 class="text-center">Consulta de Ordens de Serviço</h2>
 
     <form method="GET" class="row g-3 my-4 p-4 rounded shadow-sm custom-form-box">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label for="numero_os" class="form-label fw-semibold">Número da OS</label>
             <input type="text" id="numero_os" name="numero_os" class="form-control rounded-pill" placeholder="Digite o número da OS" value="<?= htmlspecialchars($_GET['numero_os'] ?? '') ?>">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label for="cliente_nome" class="form-label fw-semibold">Nome do Cliente</label>
             <input type="text" id="cliente_nome" name="cliente_nome" class="form-control rounded-pill" placeholder="Digite o nome do cliente" value="<?= htmlspecialchars($_GET['cliente_nome'] ?? '') ?>">
         </div>
-        <div class="col-md-4 d-flex align-items-end">
+        <div class="col-md-3">
+            <label for="servico" class="form-label fw-semibold">Serviço</label>
+            <input type="text" id="servico" name="servico" class="form-control rounded-pill" placeholder="Digite o serviço" value="<?= htmlspecialchars($_GET['servico'] ?? '') ?>">
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
             <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold">🔍 Buscar</button>
         </div>
     </form>
@@ -163,6 +186,7 @@ $result = $stmt->get_result();
                     <th>Data</th>
                     <th>Equipamento</th>
                     <th>Defeito</th>
+                    <th>Serviço</th>
                     <th>Valor Total</th>
                     <th>Cliente</th>
                     <th>Ações</th>
@@ -171,18 +195,19 @@ $result = $stmt->get_result();
             <tbody>
             <?php while ($row = $result->fetch_assoc()): ?>
                 <tr>
-                    <td><?= $row['NumeroOS'] ?></td>
-                    <td><?= $row['Data'] ?></td>
-                    <td><?= $row['Equipamento'] ?></td>
-                    <td><?= $row['Defeito'] ?></td>
+                    <td><?= htmlspecialchars($row['NumeroOS']) ?></td>
+                    <td><?= htmlspecialchars($row['Data']) ?></td>
+                    <td><?= htmlspecialchars($row['Equipamento']) ?></td>
+                    <td><?= htmlspecialchars($row['Defeito']) ?></td>
+                    <td><?= htmlspecialchars($row['Servico']) ?></td>
                     <td>R$ <?= number_format($row['ValorTotal'], 2, ',', '.') ?></td>
-                    <td><?= $row['NomeCliente'] ?></td>
+                    <td><?= htmlspecialchars($row['NomeCliente']) ?></td>
                     <td class="text-center">
-                        <a href="alterar.php?numero_os=<?= $row['NumeroOS'] ?>" class="btn btn-sm btn-warning me-1">✏️ Alterar</a>
-                        <a href="?excluir=1&numero_os=<?= $row['NumeroOS'] ?>" 
+                        <a href="alterar.php?numero_os=<?= urlencode($row['NumeroOS']) ?>" class="btn btn-sm btn-warning me-1">✏️ Alterar</a>
+                        <a href="?excluir=1&numero_os=<?= urlencode($row['NumeroOS']) ?>" 
                            class="btn btn-sm btn-danger me-1" 
                            onclick="return confirm('Tem certeza que deseja excluir esta ordem de serviço?')">🗑️ Excluir</a>
-                        <button onclick="imprimir('<?= $row['NumeroOS'] ?>')" class="btn btn-sm btn-info">
+                        <button onclick="imprimir('<?= htmlspecialchars($row['NumeroOS']) ?>')" class="btn btn-sm btn-info" title="Imprimir OS">
                             <img src="icon-imprimir.png" alt="Imprimir" class="icon-btn">
                         </button>
                     </td>
@@ -198,7 +223,7 @@ $result = $stmt->get_result();
 
 <script>
 function imprimir(numero_os) {
-    window.open('imprimir_os.php?numero_os=' + numero_os, '_blank');
+    window.open('imprimir_os.php?numero_os=' + encodeURIComponent(numero_os), '_blank');
 }
 </script>
 
@@ -210,33 +235,29 @@ function imprimir(numero_os) {
   <div class="container text-md-left">
     <div class="row text-center text-md-start">
 
-      <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mb-4">
-        <h5 class="text-uppercase fw-bold text-primary mb-3">🔧 Ordem de Serviço</h5>
-        <p>Sistema eficiente para gerenciamento de atendimentos, reparos e controle de serviços técnicos.</p>
+      <div class="col-md-4 col-lg-4 col-xl-3 mx-auto mt-3">
+        <h5 class="text-uppercase mb-4 fw-bold">Contato</h5>
+        <p><i class="fas fa-home me-3"></i> Rua dos Engrenagens, 123</p>
+        <p><i class="fas fa-envelope me-3"></i> contato@empresa.com</p>
+        <p><i class="fas fa-phone me-3"></i> +55 11 99999-9999</p>
       </div>
 
-      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-        <h6 class="text-uppercase fw-bold mb-3">Navegação</h6>
-        <ul class="list-unstyled">
-          <li><a href="criaros.php" class="text-white text-decoration-none">Cadastrar OS</a></li>
-          <li><a href="consulta.php" class="text-white text-decoration-none">Consultar OS</a></li>
-          <li><a href="atualizacoes.php" class="text-white text-decoration-none">Atualizações</a></li>
-          <li><a href="logout.php" class="text-white text-decoration-none">Logout</a></li>
-        </ul>
+      <div class="col-md-4 col-lg-4 col-xl-3 mx-auto mt-3">
+        <h5 class="text-uppercase mb-4 fw-bold">Sobre Nós</h5>
+        <p>Somos uma empresa dedicada a fornecer os melhores serviços técnicos para você.</p>
       </div>
 
-      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
-        <h6 class="text-uppercase fw-bold mb-3">Contato</h6>
-        <p><i class="bi bi-geo-alt-fill me-2"></i> Rua Exemplo, 123 - Centro</p>
-        <p><i class="bi bi-envelope-fill me-2"></i> suporte@osistema.com</p>
-        <p><i class="bi bi-phone-fill me-2"></i> (11) 99999-9999</p>
+      <div class="col-md-4 col-lg-4 col-xl-3 mx-auto mt-3">
+        <h5 class="text-uppercase mb-4 fw-bold">Redes Sociais</h5>
+        <p>
+          <a href="#" class="text-white me-4"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="text-white me-4"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="text-white me-4"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-white me-4"><i class="fab fa-linkedin-in"></i></a>
+        </p>
       </div>
 
     </div>
-  </div>
-
-  <div class="text-center mt-4 border-top pt-3" style="font-size: 0.9rem;">
-    &copy; <?= date('Y') ?> Ordem de Serviço. Todos os direitos reservados.
   </div>
 </footer>
 

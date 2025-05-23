@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 19/05/2025 às 16:47
+-- Tempo de geração: 23/05/2025 às 15:41
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -40,7 +40,13 @@ CREATE TABLE `andamentoos` (
 --
 
 INSERT INTO `andamentoos` (`id`, `OS`, `Situacao`, `Descricao`, `DataAtualizacao`) VALUES
-(1, 8, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-19 13:02:29');
+(1, 8, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-19 13:02:29'),
+(2, 19, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-23 11:44:30'),
+(3, 19, 'quase acabando', 'teste2', '2025-05-23 11:45:12'),
+(4, 19, 'quase acabando', 'teste2', '2025-05-23 11:48:44'),
+(5, 19, 'quase acabando', 'teste2', '2025-05-23 12:11:18'),
+(6, 20, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-23 12:12:36'),
+(7, 21, 'Em andamento', 'Serviço iniciado pelo colaborador', '2025-05-23 12:34:28');
 
 -- --------------------------------------------------------
 
@@ -88,8 +94,8 @@ CREATE TABLE `cliente` (
 --
 
 INSERT INTO `cliente` (`CodigoCliente`, `NomeCliente`, `email`, `senha`) VALUES
-(123, 'amanda', '', ''),
-(125, 'Lavinia', 'lavinia@gmail.com', '$2y$10$hHY9yGbpjii0YvAveE5uYeh9F4ZfNSXs/vVYvyL3OYsI1FfJdYMK.');
+(126, 'Amanda', 'amandamesquita@gmail.com', '$2y$10$vsOul51DYBo3Iqt9n5bgYuDhcYLUQ2fYroV9d5NVahVOliX0FBQ1u'),
+(127, 'Sofia', 'sofia@gmail.com', '$2y$10$7egjVpqtjV921.HGBheSg.YXf0gPxs7Oox3pA6.zXiGjc2plFUb1u');
 
 -- --------------------------------------------------------
 
@@ -110,8 +116,7 @@ CREATE TABLE `colaborador` (
 --
 
 INSERT INTO `colaborador` (`CodigoColaborador`, `NomeColaborador`, `CodigoCargo`, `email`, `senha`) VALUES
-(1, 'Lavinia Martins', 7, 'lavinia@gmail.com', '$2y$10$CA/UB2N3YjCypdSziHUe6.JRvp5XRZuiBsYyurjbPk4xHdI/4zSKa'),
-(2, 'Amanda', 8, 'amanda@gmail.com', '$2y$10$jJBPINcYex/zL3zu8GLqeeCYdR3hsbJI3b0ypMN2kJMb1p04Vuj.y');
+(3, 'amanda', 4, 'amandamesquita@gmail.com', '$2y$10$AgLvCB9GTu6OUrhjKb/Nr.EwXkligyukHXHmjEGu9dA9Be651fnTm');
 
 -- --------------------------------------------------------
 
@@ -131,20 +136,21 @@ CREATE TABLE `os` (
   `CodigoCliente` int(11) DEFAULT NULL,
   `status` enum('ativo','inativo','pendente') DEFAULT 'ativo',
   `Servico` varchar(50) DEFAULT NULL,
-  `ValorServico` decimal(10,2) DEFAULT NULL
+  `ValorServico` decimal(10,2) DEFAULT NULL,
+  `SituacaoAtual` varchar(255) DEFAULT NULL,
+  `DescricaoAtual` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `os`
 --
 
-INSERT INTO `os` (`OS`, `NumeroOS`, `Data`, `Equipamento`, `Defeito`, `ValorDefeito`, `ValorTotal`, `CodigoColaborador`, `CodigoCliente`, `status`, `Servico`, `ValorServico`) VALUES
-(5, 'OS20250428005', '2025-04-28', 'Celular', 'Tela quebrada', NULL, 0.00, NULL, 123, 'ativo', NULL, NULL),
-(6, 'OS20250428006', '2025-04-08', 'Notebook', 'travou', NULL, 100.00, NULL, 123, 'ativo', NULL, NULL),
-(8, 'OS20250519001', '2025-05-19', 'Computador', 'teste', NULL, 100.00, 2, 125, 'ativo', NULL, NULL),
-(16, 'OS20250519002', '2025-05-19', 'Computador', 'teste9', NULL, 100.00, NULL, 125, 'ativo', NULL, NULL),
-(17, 'OS20250519003', '2025-05-19', 'Computador', 'Não liga', NULL, 550.00, NULL, 125, 'ativo', NULL, NULL),
-(18, 'OS20250519004', '2025-05-19', 'Computador', 'Instalação de software', NULL, 200.00, NULL, 125, 'ativo', '0', NULL);
+INSERT INTO `os` (`OS`, `NumeroOS`, `Data`, `Equipamento`, `Defeito`, `ValorDefeito`, `ValorTotal`, `CodigoColaborador`, `CodigoCliente`, `status`, `Servico`, `ValorServico`, `SituacaoAtual`, `DescricaoAtual`) VALUES
+(19, 'OS20250523001', '2025-05-23', 'Computador', 'Travando', NULL, 85.00, 3, 126, 'ativo', 'Outros', NULL, 'quase acabando', 'teste2'),
+(20, 'OS20250523002', '2025-05-23', 'Computador', 'Fios soltos', NULL, 100.00, 3, 126, 'ativo', 'Reparo', NULL, NULL, NULL),
+(21, 'OS20250523003', '2025-05-23', 'Computador', 'Tela quebrada', NULL, 150.00, 3, 126, 'ativo', 'Troca de peça', NULL, NULL, NULL),
+(22, 'OS20250523004', '2025-05-23', 'Computador', 'Instalação de software', NULL, 200.00, NULL, 127, 'ativo', '0', NULL, NULL, NULL),
+(23, 'OS20250523005', '2025-05-23', 'Computador', 'Instalação de software', NULL, 200.00, NULL, 127, 'ativo', '0', NULL, NULL, NULL);
 
 --
 -- Índices para tabelas despejadas
@@ -193,7 +199,7 @@ ALTER TABLE `os`
 -- AUTO_INCREMENT de tabela `andamentoos`
 --
 ALTER TABLE `andamentoos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de tabela `cargo`
@@ -205,42 +211,19 @@ ALTER TABLE `cargo`
 -- AUTO_INCREMENT de tabela `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `CodigoCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
+  MODIFY `CodigoCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
 
 --
 -- AUTO_INCREMENT de tabela `colaborador`
 --
 ALTER TABLE `colaborador`
-  MODIFY `CodigoColaborador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `CodigoColaborador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `os`
 --
 ALTER TABLE `os`
-  MODIFY `OS` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
-
---
--- Restrições para tabelas despejadas
---
-
---
--- Restrições para tabelas `andamentoos`
---
-ALTER TABLE `andamentoos`
-  ADD CONSTRAINT `andamentoos_ibfk_1` FOREIGN KEY (`OS`) REFERENCES `os` (`OS`);
-
---
--- Restrições para tabelas `colaborador`
---
-ALTER TABLE `colaborador`
-  ADD CONSTRAINT `colaborador_ibfk_1` FOREIGN KEY (`CodigoCargo`) REFERENCES `cargo` (`CodigoCargo`);
-
---
--- Restrições para tabelas `os`
---
-ALTER TABLE `os`
-  ADD CONSTRAINT `os_ibfk_1` FOREIGN KEY (`CodigoColaborador`) REFERENCES `colaborador` (`CodigoColaborador`),
-  ADD CONSTRAINT `os_ibfk_2` FOREIGN KEY (`CodigoCliente`) REFERENCES `cliente` (`CodigoCliente`);
+  MODIFY `OS` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

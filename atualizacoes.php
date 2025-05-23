@@ -124,7 +124,7 @@ $stmt->close();
 </header>
 
 <div class="container mt-5">
-    <h2 class="mb-4 text-center">Histórico de Atualizações - Ordens de Serviço</h2>
+    <h2 class="mb-4 text-center fw-bold" style="color: #0d6efd;">Histórico de Atualizações</h2>
 
     <?php if ($result->num_rows > 0): ?>
         <?php while ($row = $result->fetch_assoc()): ?>

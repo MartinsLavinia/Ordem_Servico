@@ -167,7 +167,7 @@ $result = $conexao->query($sql);
 ?>
 
 <div class="container mt-5">
-    <h2 class="mb-4 text-center">Ordens de Serviço Pendentes</h2>
+    <h2 class="mb-4 text-center fw-bold" style="color: #198754;">Ordens de Serviço Pendentes</h2>
 
     <?php if ($result->num_rows > 0): ?>
         <div class="table-responsive shadow-sm rounded-3 p-2 custom-table-box">

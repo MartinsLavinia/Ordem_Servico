@@ -198,8 +198,8 @@ $stmt->close();
   </div>
 </header>
 
-<div class="container mt-4">
-    <h2 class="text-center">Consulta de Ordens de Serviço</h2>
+<div class="container mt-5">
+    <h2 class="mb-4 text-center fw-bold" style="color: #0d6efd;">Consulta de Ordens de Serviço</h2>
 
     <form method="GET" class="row g-3 my-4 p-4 rounded shadow-sm custom-form-box">
         <div class="col-md-3">

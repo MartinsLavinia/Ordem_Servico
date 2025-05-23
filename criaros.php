@@ -261,11 +261,10 @@ nav a {
 <!-- Conteúdo da página com espaçamento para o cabeçalho fixo -->
 <div class="content" style="padding-top: 40px;">
   <div class="text-center mb-4">
-      <h2>Bem-vindo, <?= htmlspecialchars($nome_cliente) ?>!</h2>
+      <h2 class="mb-4 text-center fw-bold" style="color: #0d6efd;">Bem-vindo, <?= htmlspecialchars($nome_cliente) ?>!</h2>
       <p>Use o sistema para cadastrar, acompanhar e gerenciar suas ordens de serviço com facilidade.</p>
     </div>
 </div>
-
 
 
 

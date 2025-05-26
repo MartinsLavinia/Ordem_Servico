@@ -37,6 +37,67 @@
      </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
 
+      <?php if (isset($_GET['cadastro']) && $_GET['cadastro'] === 'sucesso'): ?>
+    <div id="sucesso-toast" class="toast position-fixed top-0 end-0 m-3 border-0" role="alert" aria-live="assertive" aria-atomic="true"
+         style="background-color: #cce5ff; color:rgb(4, 45, 107); z-index: 9999;">
+        <div class="d-flex">
+            <div class="toast-body">
+                ✅ Cadastro realizado com sucesso! Você já pode fazer login.
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if (isset($_GET['login'])): ?>
+  <?php
+    $login = $_GET['login'];
+    $toastClass = "";
+    $toastMessage = "";
+
+    if ($login == "sucesso") {
+    $toastClass = "toast-azul-claro";
+    $toastMessage = "✅ Login realizado com sucesso! Redirecionando...";
+    } elseif ($login == "senha_incorreta") {
+        $toastClass = "bg-danger text-white";
+        $toastMessage = "❌ Senha incorreta! Tente novamente.";
+    } elseif ($login == "email_nao_encontrado") {
+        $toastClass = "bg-danger text-white";
+        $toastMessage = "❌ Email não encontrado! Cadastre-se.";
+    } elseif ($login == "preencha_campos") {
+        $toastClass = "bg-warning text-dark";
+        $toastMessage = "⚠️ Por favor, preencha todos os campos.";
+    }
+  ?>
+  <div id="login-toast" class="toast position-fixed top-0 end-0 m-3 border-0 <?= $toastClass ?>" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 9999;">
+      <div class="d-flex">
+          <div class="toast-body">
+              <?= $toastMessage ?>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+      </div>
+  </div>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const toastEl = document.getElementById("login-toast");
+      if (toastEl) {
+        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+        toast.show();
+
+        // Se login foi sucesso, redireciona após 2s
+        <?php if ($login == "sucesso"): ?>
+          setTimeout(() => {
+            window.location.href = 'criaros.php';
+          }, 2000);
+        <?php endif; ?>
+      }
+    });
+  </script>
+<?php endif; ?>
+
+
+
       <form method="POST" action="processa_login.php">
   <h2 style="margin-bottom: 30px; font-weight: bold; text-align: left;">Login - Bem-vindo, Usuário!</h2>
   
@@ -182,8 +243,26 @@ svg#freepik_stories-service-247.animated #freepik--Chat--inject-82 {
   }
 }
 
+.toast-azul-claro {
+  background-color:rgb(181, 218, 243); 
+  color:rgb(23, 51, 128) ;
+}
+
+
 </style>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const toastEl = document.getElementById("sucesso-toast");
+        if (toastEl) {
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+        }
+    });
+</script>
+
+
 </body>
 </html>
 <?php

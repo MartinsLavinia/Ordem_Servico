@@ -1,6 +1,7 @@
 <?php
 
 include 'conexao.php';
+include('verifica_login.php');
 
 if (!isset($_GET['numero_os'])) {
     echo "Número da OS não fornecido.";

@@ -1,3 +1,8 @@
+<?php
+$mensagemSucesso = isset($_GET['cadastro']) && $_GET['cadastro'] === 'sucesso';
+?>
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -26,6 +31,7 @@
 </header>
 
 <section class="vh-100 section-content">>
+  
 
   <div class="container-fluid h-custom">
     <div class="row d-flex justify-content-center align-items-center h-100">
@@ -35,6 +41,74 @@
       </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
  
+      <?php if (isset($_GET['cadastro']) && $_GET['cadastro'] === 'sucesso'): ?>
+    <div id="sucesso-toast" class="toast position-fixed top-0 end-0 m-3 border-0" role="alert" aria-live="assertive" aria-atomic="true" style="background-color: #d4edda; color: #155724; z-index: 9999;">
+        <div class="d-flex">
+            <div class="toast-body">
+                ✅ Cadastro realizado com sucesso! Você já pode fazer login.
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if (isset($_GET['login'])): ?>
+    <?php
+        $msg = "";
+        $bgColor = "";
+        $textColor = "color: #fff;";
+        switch ($_GET['login']) {
+            case 'sucesso':
+                $msg = "✅ Login realizado com sucesso! Redirecionando...";
+                $bgColor = "background-color: #d4edda; color: #155724;"; // verde claro (mesmo do cadastro)
+                $textColor = "color: #155724;";
+                break;
+            case 'senha_incorreta':
+                $msg = "⚠️ Senha incorreta! Tente novamente.";
+                $bgColor = "background-color: #dc3545;"; // vermelho (Bootstrap danger)
+                break;
+            case 'email_nao_encontrado':
+                $msg = "⚠️ Email não encontrado! Cadastre-se ou verifique o email.";
+                $bgColor = "background-color: #dc3545;";
+                break;
+            case 'preencha_campos':
+                $msg = "⚠️ Por favor, preencha todos os campos!";
+                $bgColor = "background-color: #ffc107; color: #212529;"; // amarelo (Bootstrap warning)
+                $textColor = "color: #212529;";
+                break;
+            default:
+                $msg = "Mensagem desconhecida.";
+                $bgColor = "background-color: #6c757d;"; // cinza (Bootstrap secondary)
+                break;
+        }
+    ?>
+    <div id="login-toast" class="toast position-fixed top-0 end-0 m-3 border-0" role="alert" aria-live="assertive" aria-atomic="true" style="<?= $bgColor ?> <?= $textColor ?> z-index: 9999;">
+        <div class="d-flex">
+            <div class="toast-body">
+                <?= $msg ?>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var toastElement = document.getElementById('login-toast');
+            var toast = new bootstrap.Toast(toastElement);
+            toast.show();
+
+            // Se for sucesso, redirecionar após 2 segundos
+            <?php if ($_GET['login'] === 'sucesso'): ?>
+                setTimeout(function() {
+                    window.location.href = 'aceitar_servicos.php';
+                }, 2000);
+            <?php endif; ?>
+        });
+    </script>
+<?php endif; ?>
+
+
+
       
       <form action="processa_login_colaborador.php" method="POST">
   <h2 style="margin-bottom: 10px; font-weight: bold; text-align: left;">
@@ -213,6 +287,18 @@
     }
   }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const toastEl = document.getElementById("sucesso-toast");
+        if (toastEl) {
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+        }
+    });
+</script>
+
 
 </body>
 </html>

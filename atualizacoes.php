@@ -1,9 +1,6 @@
 <?php
-// Inicia a sessão
-session_start();
-
-// Conexão com o banco de dados
 include("conexao.php");
+include('verifica_login.php');
 
 // Verifica se o parâmetro de exclusão foi enviado
 if (isset($_GET['excluir'])) {

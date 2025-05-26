@@ -1,6 +1,6 @@
 <?php
-session_start();
 include("conexao.php");
+include('verifica_login.php');
 
 // Verifica login e busca nome do usuário antes do HTML
 if (!isset($_SESSION['colaborador']) || !isset($_SESSION['colaborador']['codigo'])) {

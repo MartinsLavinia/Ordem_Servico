@@ -1,6 +1,7 @@
 <?php
 
 include 'conexao.php';
+include('verifica_login.php');
 
 $mensagem = '';
 $osData = null;

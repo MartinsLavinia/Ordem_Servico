@@ -1,6 +1,6 @@
 <?php
-session_start();
 include("conexao.php");
+include('verifica_login.php');
 
 // Verifica se colaborador está logado - se não, redireciona para login
 if (!isset($_SESSION['colaborador']) || !isset($_SESSION['colaborador']['codigo'])) {

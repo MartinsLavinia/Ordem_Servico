@@ -4,6 +4,11 @@ session_start();
 include("conexao.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!isset($_POST['email']) || !isset($_POST['senha']) || empty(trim($_POST['email'])) || empty($_POST['senha'])) {
+        header("Location: login-adm.php?login=preencha_campos");
+        exit();
+    }
+
     $email = strtolower(trim($_POST['email']));
     $senha = $_POST['senha'];
 
@@ -24,13 +29,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'email' => $email
             ];
 
-            header("Location: aceitar_servicos.php");
+            header("Location: login-adm.php?login=sucesso");
+            exit();
+        } else {
+            // Senha incorreta
+            header("Location: login-adm.php?login=senha_incorreta");
             exit();
         }
+    } else {
+        // Email não encontrado
+        header("Location: login-adm.php?login=email_nao_encontrado");
+        exit();
     }
-
-    // Erro no login
-    header("Location: login-adm.php?erro=1");
+} else {
+    // Caso o método não seja POST, redireciona para login
+    header("Location: login-adm.php");
     exit();
 }
 ?>

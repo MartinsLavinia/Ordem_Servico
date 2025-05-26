@@ -1,6 +1,7 @@
 <?php
 
 include 'conexao.php';
+include('verifica_login.php');
 $conexao = new mysqli("localhost", "root", "", "oscd_lamanna");
 
 $tecnico_id = 1; // Substitua pelo ID real do técnico logado

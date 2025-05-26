@@ -1,6 +1,6 @@
 <?php
-session_start();
 include 'conexao.php';
+include('verifica_login.php');
 
 // Verifica se está logado
 if (!isset($_SESSION['CodigoCliente'])) {

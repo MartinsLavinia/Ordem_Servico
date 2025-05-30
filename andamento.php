@@ -32,25 +32,32 @@ if (isset($_GET['search']) && isset($_GET['type'])) {
     $searchType = $_GET['type'];
 }
 
-// Processar POST para atualizar andamento, finalizar ou alterar serviço e valor
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $os_id = isset($_POST['os_id']) ? (int)$_POST['os_id'] : 0;
 
     if ($os_id <= 0) {
         $msgErro = "OS inválida.";
     } else {
-        // Finalizar OS
         if (isset($_POST['finalizar'])) {
-            $stmt = $conexao->prepare("UPDATE os SET Status = 'Finalizada' WHERE OS = ? AND CodigoColaborador = ?");
-            $stmt->bind_param("ii", $os_id, $colaboradorId);
-            if ($stmt->execute()) {
-                $msgSucesso = "OS finalizada com sucesso.";
+            // Verifique se $colaboradorId está definido corretamente
+            if (!isset($colaboradorId) || empty($colaboradorId)) {
+                $msgErro = "Colaborador não identificado.";
             } else {
-                $msgErro = "Erro ao finalizar OS.";
+                // Atualize para status válido, por exemplo 'finalizada' (depois de alterar enum no banco)
+                $stmt = $conexao->prepare("UPDATE os SET status = 'finalizada' WHERE OS = ? AND CodigoColaborador = ?");
+                $stmt->bind_param("ii", $os_id, $colaboradorId);
+                if ($stmt->execute()) {
+                    if ($stmt->affected_rows > 0) {
+                        $msgSucesso = "OS finalizada com sucesso.";
+                    } else {
+                        $msgErro = "Nenhuma OS atualizada. Verifique se a OS e colaborador correspondem.";
+                    }
+                } else {
+                    $msgErro = "Erro ao finalizar OS: " . $stmt->error;
+                }
+                $stmt->close();
             }
-            $stmt->close();
         }
-
         // Atualizar andamento
         if (isset($_POST['situacao']) && isset($_POST['descricao'])) {
             $situacao = trim($_POST['situacao']);
@@ -189,6 +196,21 @@ $nome_colaborador = $_SESSION['colaborador']['nome'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="style-adm.css" rel="stylesheet">
+    <style>
+         .btn-outline-cancel {
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+    ,
+  }
+
+  .btn-outline-cancel:hover {
+    background-color: #f0f0f0;
+    border: 2px solid #6c757d;
+    color: #6c757d;
+  }
+    </style>
 </head>
 <body>
 
@@ -322,11 +344,40 @@ $nome_colaborador = $_SESSION['colaborador']['nome'];
                 <button type="submit" class="btn btn-primary" name="andamento">Atualizar Andamento</button>
             </form>
 
-            <!-- Botão para finalizar OS -->
-            <form method="POST" class="mt-3" onsubmit="return confirm('Tem certeza que deseja finalizar esta OS?');">
-                <input type="hidden" name="os_id" value="<?= htmlspecialchars($row['OS']) ?>">
-                <button type="submit" class="btn btn-danger" name="finalizar">Finalizar OS</button>
-            </form>
+            <button type="button" class="btn btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#confirmModal<?= $row['OS'] ?>">
+    Finalizar OS
+</button>
+
+<!-- Modal de confirmação -->
+<div class="modal fade" id="confirmModal<?= $row['OS'] ?>" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirmar Finalização</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+
+      <div class="modal-body">
+        Tem certeza que deseja finalizar esta OS?
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-cancel" data-bs-dismiss="modal">
+            Cancelar
+        </button>
+
+
+        <!-- Formulário dentro do modal -->
+        <form method="POST">
+          <input type="hidden" name="os_id" value="<?= htmlspecialchars($row['OS']) ?>">
+          <button type="submit" class="btn btn-danger" name="finalizar">Sim, Finalizar</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
         </div>
     </div>
     <?php endwhile; ?>
